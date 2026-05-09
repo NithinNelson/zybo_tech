@@ -3,9 +3,25 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../widgets/dashboard_view.dart';
+import 'transactions_screen.dart';
+import 'profile_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _currentIndex = 0;
+
+  final List<Widget> _screens = [
+    const DashboardView(),
+    const TransactionsScreen(),
+    const ProfileScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -192,26 +208,43 @@ class HomeScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SvgPicture.asset(
-                      'assets/images/pie_slice.svg',
-                      height: 23.h,
-                      fit: BoxFit.fitHeight,
-                    ),
-                    SvgPicture.asset(
-                      'assets/images/arrow_round.svg',
-                      height: 23.h,
-                      fit: BoxFit.fitHeight,
-                    ),
-                    SvgPicture.asset(
-                      'assets/images/user_circle.svg',
-                      height: 23.h,
-                      fit: BoxFit.fitHeight,
-                    ),
+                    _buildNavItem(0, 'assets/images/pie_slice.svg'),
+                    _buildNavItem(1, 'assets/images/arrow_round.svg'),
+                    _buildNavItem(2, 'assets/images/user_circle.svg'),
                   ],
                 ),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, String assetPath) {
+    final bool isActive = _currentIndex == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        width: 52.h,
+        height: 52.h,
+        padding: EdgeInsets.all(12.h),
+        decoration: BoxDecoration(
+          color: isActive ? AppColors.primary : Colors.transparent,
+          shape: BoxShape.circle,
+        ),
+        child: SvgPicture.asset(
+          assetPath,
+          colorFilter: ColorFilter.mode(
+            isActive ? Colors.white : AppColors.textPrimary.withValues(alpha: 0.6),
+            BlendMode.srcIn,
+          ),
+          fit: BoxFit.contain,
         ),
       ),
     );
@@ -231,9 +264,9 @@ class HomeScreen extends StatelessWidget {
           gradient: gradient,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
-            color: isIncome
-                ? AppColors.forestGreen.withValues(alpha: 0.3)
-                : AppColors.crimson.withValues(alpha: 0.3)
+              color: isIncome
+                  ? AppColors.forestGreen.withValues(alpha: 0.3)
+                  : AppColors.crimson.withValues(alpha: 0.3)
           ),
         ),
         child: Column(
