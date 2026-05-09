@@ -24,17 +24,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     const OnboardingContent(
       title: 'Privacy by Default, With Zero Ads or Hidden Tracking',
       description: 'No ads. No trackers. No third-party analytics.',
-      image: 'assets/images/Logo.svg',
     ),
     const OnboardingContent(
       title: 'Insights That Help You Spend Better Without Complexity',
       description: 'See category-wise spending, recent activity.',
-      image: 'assets/images/Logo.svg',
     ),
     const OnboardingContent(
       title: 'Local-First Tracking That Stays Fully On Your Device',
       description: 'Your finances stay on your phone.',
-      image: 'assets/images/Logo.svg',
     ),
   ];
 
