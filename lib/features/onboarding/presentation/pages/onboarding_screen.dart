@@ -49,17 +49,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           // Navigate to home or login
           // Navigator.of(context).pushReplacementNamed('/home');
         }
-        if (_pageController.hasClients &&
-            _pageController.page?.toInt() != state.currentIndex) {
-          _pageController.animateToPage(
-            state.currentIndex,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
-        }
       },
       child: Scaffold(
-        body: Container(
+        body: GestureDetector(
+          onHorizontalDragEnd: (details) {
+            if (details.primaryVelocity! < 0) {
+              if (_pageController.hasClients && _pageController.page!.round() < _contents.length - 1) {
+                _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+              }
+            } else if (details.primaryVelocity! > 0) {
+              if (_pageController.hasClients && _pageController.page!.round() > 0) {
+                _pageController.previousPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+              }
+            }
+          },
+          behavior: HitTestBehavior.opaque,
+          child: Container(
           decoration: const BoxDecoration(
             color: Colors.black,
             image: DecorationImage(
@@ -117,7 +122,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             currentIndex: state.currentIndex,
                           ),
                           SizedBox(height: 35.h),
-                          OnboardingSlide(content: _contents.first),
+                          SizedBox(
+                            height: 90.h,
+                            child: PageView.builder(
+                              controller: _pageController,
+                              itemCount: _contents.length,
+                              onPageChanged: (index) {
+                                context.read<OnboardingBloc>().add(PageChanged(index));
+                              },
+                              itemBuilder: (context, index) {
+                                return OnboardingSlide(content: _contents[index]);
+                              },
+                            ),
+                          ),
                           SizedBox(height: 30.h),
                           Row(
                             children: [
@@ -130,9 +147,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   ),
                                   child: IconButton(
                                     onPressed: () {
-                                      context.read<OnboardingBloc>().add(
-                                        PreviousPage(),
-                                      );
+                                      if (_pageController.hasClients && _pageController.page!.round() > 0) {
+                                        _pageController.previousPage(
+                                          duration: const Duration(milliseconds: 300),
+                                          curve: Curves.easeInOut,
+                                        );
+                                      }
                                     },
                                     icon: Icon(
                                       Icons.arrow_back,
@@ -144,14 +164,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               Expanded(
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    context.read<OnboardingBloc>().add(
-                                      NextPage(),
-                                    );
+                                    if (_pageController.hasClients && _pageController.page!.round() < _contents.length - 1) {
+                                      _pageController.nextPage(
+                                        duration: const Duration(milliseconds: 300),
+                                        curve: Curves.easeInOut,
+                                      );
+                                    } else {
+                                      context.read<OnboardingBloc>().add(SkipOnboarding());
+                                    }
                                   },
                                   child: Text(
                                     state.currentIndex == _contents.length - 1
                                         ? 'Get Started'
                                         : 'Next',
+                                    style: Theme.of(context).textTheme.bodyMedium,
                                   ),
                                 ),
                               ),
@@ -165,6 +191,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ],
             ),
           ),
+        ),
         ),
       ),
     );

@@ -37,9 +37,10 @@ class AppTheme {
             fontWeight: FontWeight.w400,
             color: AppColors.textSecondary,
           ),
-          bodyMedium: TextStyle(
-            fontSize: 14,
-            color: AppColors.textTertiary,
+          bodyMedium: GoogleFonts.inter(
+            fontSize: 15.h,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
           ),
         ),
       ),
