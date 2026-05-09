@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../auth/presentation/pages/login_screen.dart';
 import '../../domain/entities/onboarding_content.dart';
 import '../bloc/onboarding_bloc.dart';
 import '../bloc/onboarding_event.dart';
@@ -46,8 +47,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return BlocListener<OnboardingBloc, OnboardingState>(
       listener: (context, state) {
         if (state.isCompleted) {
-          // Navigate to home or login
-          // Navigator.of(context).pushReplacementNamed('/home');
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          );
         }
       },
       child: Scaffold(
@@ -109,7 +111,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
 
                 Positioned(
-                  bottom: 40.h,
+                  bottom: 10.h,
                   left: 12.h,
                   right: 12.h,
                   child: BlocBuilder<OnboardingBloc, OnboardingState>(
