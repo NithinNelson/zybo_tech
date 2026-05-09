@@ -27,7 +27,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.h),
+          padding: EdgeInsets.symmetric(horizontal: 20.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -78,9 +78,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                       focusNode: _focusNode,
                       keyboardType: TextInputType.number,
                       maxLength: 6,
-                      onChanged: (value) {
-                        setState(() {});
-                      },
+                      autofocus: true,
                       decoration: const InputDecoration(
                         counterText: '',
                         border: InputBorder.none,
@@ -89,58 +87,55 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      _focusNode.requestFocus();
+                      _focusNode.unfocus();
+                      Future.delayed(const Duration(milliseconds: 10), () {
+                        if (mounted) _focusNode.requestFocus();
+                      });
                     },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: List.generate(
-                        6,
-                        (index) {
-                          String char = '';
-                          if (_otpController.text.length > index) {
-                            char = _otpController.text[index];
-                          }
-                          bool isFocused = _otpController.text.length == index;
-                          
-                          return Container(
-                            width: 50.w,
-                            height: 64.h,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF1E1E1E),
-                              borderRadius: BorderRadius.circular(12.r),
-                              border: Border.all(
-                                color: isFocused ? AppColors.primary : Colors.transparent,
-                                width: 2,
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                char.isEmpty ? '-' : char,
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 24.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: char.isEmpty ? Colors.white24 : Colors.white,
+                    behavior: HitTestBehavior.opaque,
+                    child: ValueListenableBuilder<TextEditingValue>(
+                      valueListenable: _otpController,
+                      builder: (context, value, child) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: List.generate(
+                            6,
+                            (index) {
+                              final String char = value.text.length > index ? value.text[index] : '';
+
+                              return Container(
+                                width: 51.h,
+                                height: 64.h,
+                                decoration: BoxDecoration(
+                                  color: AppColors.textPrimary.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8.r),
                                 ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                                child: Center(
+                                  child: Text(
+                                    char.isEmpty ? '-' : char,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 23.h,
+                                      fontWeight: FontWeight.w400,
+                                      color: AppColors.textPrimary.withValues(alpha: char.isEmpty ? 0.6 : 1.0),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 32.h),
+              SizedBox(height: 23.h),
               ValueListenableBuilder<TextEditingValue>(
                 valueListenable: _otpController,
                 builder: (context, value, child) {
-                  bool isFilled = value.text.length == 6;
+                  final bool isFilled = value.text.length == 6;
                   return ElevatedButton(
-                    onPressed: isFilled
-                        ? () {
-                            // Handle verification
-                          }
-                        : null,
+                    onPressed: isFilled ? () => {/* Handle verify */} : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: AppColors.textPrimary,
@@ -162,24 +157,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 },
               ),
               SizedBox(height: 32.h),
-              Center(
-                child: RichText(
-                  text: TextSpan(
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 14.sp,
-                      color: AppColors.textSecondary,
-                    ),
-                    children: [
-                      const TextSpan(text: 'Resend OTP in '),
-                      TextSpan(
-                        text: ' 32s',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
+              Text(
+                  'Resend OTP in 32s',
+                style: GoogleFonts.inter(
+                    fontSize: 13.h,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.textPrimary.withValues(alpha: 0.6)
                 ),
               ),
             ],
