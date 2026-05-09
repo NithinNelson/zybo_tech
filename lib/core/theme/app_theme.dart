@@ -27,7 +27,7 @@ class AppTheme {
             color: AppColors.textPrimary,
           ),
           displayMedium: TextStyle(
-            fontSize: 24,
+            fontSize: 24.h,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
             letterSpacing: -0.5,
@@ -41,6 +41,11 @@ class AppTheme {
             fontSize: 15.h,
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
+          ),
+          labelMedium: GoogleFonts.inter(
+            fontSize: 14.h,
+            fontWeight: FontWeight.w400,
+            color: AppColors.iceBlue
           ),
         ),
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
+import 'otp_verification_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -72,7 +73,11 @@ class LoginScreen extends StatelessWidget {
               SizedBox(height: 24.h),
               ElevatedButton(
                 onPressed: () {
-                  // Handle login logic
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const OtpVerificationScreen(),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
