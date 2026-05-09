@@ -45,7 +45,17 @@ class AppTheme {
           labelMedium: GoogleFonts.inter(
             fontSize: 14.h,
             fontWeight: FontWeight.w400,
-            color: AppColors.iceBlue
+            color: AppColors.iceBlue,
+          ),
+          titleSmall: GoogleFonts.inter(
+            fontSize: 12.h,
+            fontWeight: FontWeight.w400,
+            color: AppColors.textPrimary,
+          ),
+          bodySmall: GoogleFonts.inter(
+            fontSize: 13.h,
+            fontWeight: FontWeight.w500,
+            color: AppColors.textPrimary,
           ),
         ),
       ),

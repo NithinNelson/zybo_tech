@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../home/presentation/pages/home_screen.dart';
 
 class UserNameScreen extends StatefulWidget {
   const UserNameScreen({super.key});
@@ -87,7 +88,10 @@ class _UserNameScreenState extends State<UserNameScreen> {
                   return ElevatedButton(
                     onPressed: isEnabled
                         ? () {
-                            // Handle complete profile
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (context) => const HomeScreen()),
+                              (route) => false,
+                            );
                           }
                         : null,
                     style: ElevatedButton.styleFrom(
