@@ -14,7 +14,7 @@ class AppColors {
   static const Color iceBlue = Color(0xFF007AFF);
 
   static const Color error = Color(0xFFCF6679);
-  static const Color success = Color(0xFF4CAF50);
+  static const Color success = Color(0xFF34FF4C);
   
   static const LinearGradient primaryGradient = LinearGradient(
     colors: [primary, secondary],

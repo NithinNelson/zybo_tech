@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
+import 'user_name_screen.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   const OtpVerificationScreen({super.key});
@@ -135,7 +136,15 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 builder: (context, value, child) {
                   final bool isFilled = value.text.length == 6;
                   return ElevatedButton(
-                    onPressed: isFilled ? () => {/* Handle verify */} : null,
+                    onPressed: isFilled
+                        ? () {
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => const UserNameScreen(),
+                              ),
+                            );
+                          }
+                        : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: AppColors.textPrimary,
