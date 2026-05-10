@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/repositories/expense_repository.dart';
 import '../../../../features/auth/domain/repositories/auth_repository.dart';
@@ -101,10 +100,11 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
 
   Future<void> _onAddCategory(AddCategoryEvent event, Emitter<ExpenseState> emit) async {
     final result = await repository.addCategory(event.category);
-    result.fold(
-      (error) => emit(ExpenseError(error)),
-      (_) => _loadData(emit),
-    );
+    if (result.isLeft()) {
+      result.fold((error) => emit(ExpenseError(error)), (_) {});
+    } else {
+      await _loadData(emit);
+    }
   }
 
   Future<void> _onDeleteCategory(DeleteCategoryEvent event, Emitter<ExpenseState> emit) async {
@@ -115,10 +115,11 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     }
     
     final result = await repository.deleteCategory(event.id);
-    result.fold(
-      (error) => emit(ExpenseError(error)),
-      (_) => _loadData(emit),
-    );
+    if (result.isLeft()) {
+      result.fold((error) => emit(ExpenseError(error)), (_) {});
+    } else {
+      await _loadData(emit);
+    }
   }
 
   Future<void> _onSyncData(SyncDataEvent event, Emitter<ExpenseState> emit) async {
