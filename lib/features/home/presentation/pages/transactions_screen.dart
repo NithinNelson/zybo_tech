@@ -31,7 +31,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> with AutomaticK
             ),
           ),
         ),
-        SizedBox(height: 24.h),
+        SizedBox(height: 28.h),
         Expanded(
           child: ListView.builder(
             padding: EdgeInsets.only(left: 20.h, right: 20.h, bottom: 100.h),

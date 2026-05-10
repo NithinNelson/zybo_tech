@@ -81,8 +81,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
             Positioned(
               bottom: 20.h,
-              left: 80.w,
-              right: 80.w,
+              left: 90.w,
+              right: 90.w,
               child: ValueListenableBuilder<int>(
                 valueListenable: _currentIndexNotifier,
                 builder: (context, currentIndex, _) {

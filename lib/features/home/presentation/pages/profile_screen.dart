@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
 
@@ -25,117 +26,141 @@ class _ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCl
           SizedBox(height: 30.h),
           Text(
             'Profile & Settings',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 24.sp,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontSize: 19.h,
             ),
           ),
           SizedBox(height: 24.h),
           
-          // Nickname Section
           _buildSectionHeader('NICKNAME'),
           Container(
             padding: EdgeInsets.all(16.h),
             decoration: BoxDecoration(
-              color: const Color(0xFF121212),
-              borderRadius: BorderRadius.circular(16.r),
-              border: Border.all(color: Colors.white10),
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.1)),
             ),
             child: Row(
               children: [
                 Text(
                   'Naazley',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    fontSize: 19.h,
                   ),
                 ),
                 const Spacer(),
                 Container(
-                  padding: EdgeInsets.all(8.h),
+                  width: 36.h,
+                  height: 36.h,
                   decoration: BoxDecoration(
-                    color: Colors.black,
+                    color: AppColors.black,
                     borderRadius: BorderRadius.circular(8.r),
-                    border: Border.all(color: Colors.white24),
+                    border: Border.all(color: AppColors.textPrimary, width: 1.h),
                   ),
-                  child: Icon(Icons.edit_outlined, color: Colors.white, size: 16.sp),
+                  child: Center(
+                    child: SvgPicture.asset(
+                      'assets/images/edit_pencil.svg',
+                      height: 13.h,
+                      fit: BoxFit.fitHeight,
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
-          
-          SizedBox(height: 24.h),
-          
-          // Alert Limit Section
-          _buildSectionHeader('ALERT LIMIT (₹)'),
+
+          Divider(
+            color: AppColors.textPrimary.withValues(alpha: 0.05),
+            thickness: 3.h,
+            height: 36.h,
+          ),
+
           Container(
             padding: EdgeInsets.all(16.h),
             decoration: BoxDecoration(
-              color: const Color(0xFF121212),
-              borderRadius: BorderRadius.circular(16.r),
-              border: Border.all(color: Colors.white10),
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.1)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                _buildSectionHeader('ALERT LIMIT (₹)'),
                 Row(
                   children: [
                     Expanded(
                       child: Container(
-                        height: 50.h,
+                        height: 48.h,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.05),
+                          color: AppColors.textPrimary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12.r),
                         ),
-                        padding: EdgeInsets.symmetric(horizontal: 16.w),
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Amount ( ₹ )',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 14.sp,
-                            color: AppColors.textTertiary,
-                          ),
+                        child: Row(
+                          children: [
+                            SizedBox(width: 16.h),
+                            Text(
+                              'Amount ',
+                              style: GoogleFonts.inter(
+                                fontSize: 17.h,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.textPrimary.withValues(alpha: 0.6),
+                              ),
+                            ),
+                            Text(
+                              '( ₹ )',
+                              style: GoogleFonts.inter(
+                                fontSize: 17.h,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                    SizedBox(width: 12.w),
+                    SizedBox(width: 12.h),
                     ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
-                        minimumSize: Size(60.w, 50.h),
+                        minimumSize: Size(54.h, 48.h),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.r),
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
                       ),
-                      child: Text('Set', style: GoogleFonts.plusJakartaSans(fontSize: 14.sp)),
+                      child: Text(
+                          'Set',
+                          style: Theme.of(context).textTheme.bodySmall,
+                      ),
                     ),
                   ],
                 ),
                 SizedBox(height: 12.h),
                 Text(
                   'Current Limit: ₹1,000',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 14.sp,
-                    color: AppColors.textSecondary,
+                  style: GoogleFonts.inter(
+                    fontSize: 13.h,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.textPrimary,
                   ),
-                ),
+                )
               ],
             ),
           ),
+
+          Divider(
+            color: AppColors.textPrimary.withValues(alpha: 0.05),
+            thickness: 3.h,
+            height: 36.h,
+          ),
           
-          SizedBox(height: 24.h),
-          
-          // Categories Section
           _buildSectionHeader('CATEGORIES'),
           Container(
             padding: EdgeInsets.all(16.h),
             decoration: BoxDecoration(
-              color: const Color(0xFF121212),
-              borderRadius: BorderRadius.circular(16.r),
-              border: Border.all(color: Colors.white10),
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.1)),
             ),
             child: Column(
               children: [
@@ -143,95 +168,140 @@ class _ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCl
                   children: [
                     Expanded(
                       child: Container(
-                        height: 50.h,
+                        height: 48.h,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.05),
+                          color: AppColors.textPrimary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12.r),
                         ),
-                        padding: EdgeInsets.symmetric(horizontal: 16.w),
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'New category Name',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 14.sp,
-                            color: AppColors.textTertiary,
-                          ),
+                        child: Row(
+                          children: [
+                            SizedBox(width: 16.h),
+                            Text(
+                              'New category Name',
+                              style: GoogleFonts.inter(
+                                fontSize: 13.h,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.textPrimary.withValues(alpha: 0.6),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                    SizedBox(width: 12.w),
-                    Container(
-                      width: 50.h,
-                      height: 50.h,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(12.r),
+                    SizedBox(width: 12.h),
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        minimumSize: Size(48.h, 48.h),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
                       ),
-                      child: Icon(Icons.add, color: Colors.white, size: 24.sp),
+                      child: Center(
+                        child: Icon(
+                          Icons.add,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                SizedBox(height: 20.h),
+                Divider(
+                  color: AppColors.textPrimary.withValues(alpha: 0.1),
+                  thickness: 1.h,
+                  height: 36.h,
+                ),
                 _buildCategoryItem('Food'),
                 _buildCategoryItem('Bills'),
                 _buildCategoryItem('Transport'),
-                _buildCategoryItem('Shopping'),
+                _buildCategoryItem('Shopping', 0),
               ],
             ),
           ),
+
+          Divider(
+            color: AppColors.textPrimary.withValues(alpha: 0.05),
+            thickness: 3.h,
+            height: 36.h,
+          ),
           
-          SizedBox(height: 24.h),
-          
-          // Cloud Sync Section
           _buildSectionHeader('CLOUD SYNC'),
           Container(
             padding: EdgeInsets.all(16.h),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(16.r),
-              border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.1)),
             ),
-            child: Row(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Sync To Cloud',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 10.h),
+              decoration: BoxDecoration(
+                color: Color(0xFF4340CA).withValues(alpha: 0.54),
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+              child: Row(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Sync To Cloud',
+                        style: GoogleFonts.inter(
+                          fontSize: 17.h,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
-                    ),
-                    Text(
-                      'Sync and update data to the backend',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12.sp,
-                        color: AppColors.textSecondary,
+                      Text(
+                        'Sync and update data to the backend',
+                        style: GoogleFonts.inter(
+                          fontSize: 13.h,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.textPrimary.withValues(alpha: 0.7),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const Spacer(),
-                Icon(Icons.cloud_upload_outlined, color: Colors.white, size: 28.sp),
-              ],
+                    ],
+                  ),
+                  const Spacer(),
+                  SvgPicture.asset(
+                      'assets/images/cloud_sync.svg',
+                    height: 18.h,
+                    fit: BoxFit.fitHeight,
+                  ),
+                ],
+              ),
             ),
           ),
           
           SizedBox(height: 32.h),
-          
-          // Logout Button
-          Center(
+
+          SizedBox(
+            width: double.infinity,
             child: TextButton.icon(
               onPressed: () {},
-              icon: Icon(Icons.power_settings_new, color: Colors.redAccent, size: 20.sp),
+              style: TextButton.styleFrom(
+                backgroundColor: AppColors.background,
+                padding: EdgeInsets.all(16.h),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                  side: BorderSide(
+                    color: AppColors.textPrimary.withValues(alpha: 0.1),
+                  ),
+                ),
+              ),
+              icon: SvgPicture.asset(
+                'assets/images/logout.svg',
+                height: 17.h,
+                fit: BoxFit.fitHeight,
+              ),
+              iconAlignment: IconAlignment.end,
               label: Text(
                 'Log Out',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.redAccent,
+                style: GoogleFonts.inter(
+                  fontSize: 14.h,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFFFF2929),
                 ),
               ),
             ),
@@ -244,40 +314,47 @@ class _ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCl
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 8.h),
+      padding: EdgeInsets.only(bottom: 10.h),
       child: Text(
         title,
-        style: GoogleFonts.plusJakartaSans(
-          fontSize: 12.sp,
-          fontWeight: FontWeight.w600,
-          color: AppColors.textTertiary,
+        style: GoogleFonts.inter(
+          fontSize: 13.h,
+          fontWeight: FontWeight.w400,
+          color: AppColors.textPrimary,
         ),
       ),
     );
   }
 
-  Widget _buildCategoryItem(String name) {
+  Widget _buildCategoryItem(String name, [double? padding]) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 16.h),
+      padding: EdgeInsets.only(bottom: padding ?? 16.h),
       child: Row(
         children: [
           Text(
             name,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.bold,
+            style: GoogleFonts.inter(
+              fontSize: 15.h,
+              fontWeight: FontWeight.w500,
               color: AppColors.textPrimary,
             ),
           ),
           const Spacer(),
           Container(
-            padding: EdgeInsets.all(8.h),
+            width: 40.h,
+            height: 40.h,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
+              color: AppColors.crimson.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8.r),
-              border: Border.all(color: Colors.white10),
+              border: Border.all(color: AppColors.crimson),
             ),
-            child: Icon(Icons.delete_outline, color: Colors.redAccent.withOpacity(0.5), size: 16.sp),
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/images/delete_icon.svg',
+                height: 13.h,
+                fit: BoxFit.fitHeight,
+              ),
+            ),
           ),
         ],
       ),
