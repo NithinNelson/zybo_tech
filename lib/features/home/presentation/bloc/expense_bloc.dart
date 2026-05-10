@@ -63,10 +63,12 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
 
   Future<void> _onAddTransaction(AddTransactionEvent event, Emitter<ExpenseState> emit) async {
     final result = await repository.addTransaction(event.transaction);
-    result.fold(
-      (error) => emit(ExpenseError(error)),
-      (_) => _loadData(emit),
-    );
+
+    if (result.isLeft()) {
+      result.fold((error) => emit(ExpenseError(error)), (_) {});
+    } else {
+      await _loadData(emit);
+    }
   }
 
   Future<void> _onDeleteTransaction(DeleteTransactionEvent event, Emitter<ExpenseState> emit) async {
