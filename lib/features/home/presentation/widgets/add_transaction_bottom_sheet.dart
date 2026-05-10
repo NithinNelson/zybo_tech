@@ -91,158 +91,160 @@ class _AddTransactionBottomSheetState extends State<AddTransactionBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: KeyboardAvoider(
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 24.h),
-          decoration: BoxDecoration(
-            color: const Color(0xFF1F1F1F),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-          ),
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Add Transaction',
-                      style: Theme.of(context).textTheme.displayLarge,
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Text(
-                        'Close',
-                        style: GoogleFonts.inter(
-                          fontSize: 13.h,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
+    return SafeArea(
+      child: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: KeyboardAvoider(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 24.h),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1F1F1F),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+            ),
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Add Transaction',
+                        style: Theme.of(context).textTheme.displayLarge,
+                      ),
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Text(
+                          'Close',
+                          style: GoogleFonts.inter(
+                            fontSize: 13.h,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 24.h),
-
-                ValueListenableBuilder<bool>(
-                  valueListenable: _isExpenseNotifier,
-                  builder: (context, isExpense, _) {
-                    return Container(
-                      height: 56.h,
-                      padding: EdgeInsets.all(4.h),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1F1F1F),
-                        borderRadius: BorderRadius.circular(8.r),
-                        border: Border.all(color: AppColors.charcoal),
-                      ),
-                      child: Row(
-                        children: [
-                          _ToggleItem(
-                            label: 'Expense',
-                            isActive: isExpense,
-                            onTap: () => _isExpenseNotifier.value = true,
-                          ),
-                          _ToggleItem(
-                            label: 'Income',
-                            isActive: !isExpense,
-                            onTap: () => _isExpenseNotifier.value = false,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-                SizedBox(height: 20.h),
-
-                _buildTextField(
-                  controller: _titleController,
-                  hint: 'Title',
-                ),
-                SizedBox(height: 16.h),
-
-                _buildTextField(
-                  controller: _amountController,
-                  hint: 'Amount ( ₹ )',
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                ),
-                SizedBox(height: 24.h),
-
-                Text(
-                  'CATEGORY',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: AppColors.textPrimary.withValues(alpha: 0.6),
+                    ],
                   ),
-                ),
-                SizedBox(height: 12.h),
-                BlocBuilder<ExpenseBloc, ExpenseState>(
-                  builder: (context, state) {
-                    if (state is ExpenseLoaded) {
-                      if (state.categories.isEmpty) {
-                        return Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8.h),
-                          child: Text(
-                            'No categories available. Please add one in Profile -> Categories.',
-                            style: TextStyle(color: AppColors.dangerRed, fontSize: 13.h),
-                          ),
-                        );
-                      }
-                      
-                      return ValueListenableBuilder<CategoryModel?>(
-                        valueListenable: _selectedCategoryNotifier,
-                        builder: (context, selectedCategory, _) {
-                          // Auto select first if null
-                          if (selectedCategory == null && state.categories.isNotEmpty) {
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              _selectedCategoryNotifier.value = state.categories.first;
-                            });
-                          }
-                          
-                          return SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: state.categories.map((category) {
-                                return _CategoryChip(
-                                  label: category.name,
-                                  isSelected: selectedCategory?.id == category.id,
-                                  onTap: () => _selectedCategoryNotifier.value = category,
-                                );
-                              }).toList(),
+                  SizedBox(height: 24.h),
+      
+                  ValueListenableBuilder<bool>(
+                    valueListenable: _isExpenseNotifier,
+                    builder: (context, isExpense, _) {
+                      return Container(
+                        height: 56.h,
+                        padding: EdgeInsets.all(4.h),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1F1F1F),
+                          borderRadius: BorderRadius.circular(8.r),
+                          border: Border.all(color: AppColors.charcoal),
+                        ),
+                        child: Row(
+                          children: [
+                            _ToggleItem(
+                              label: 'Expense',
+                              isActive: isExpense,
+                              onTap: () => _isExpenseNotifier.value = true,
+                            ),
+                            _ToggleItem(
+                              label: 'Income',
+                              isActive: !isExpense,
+                              onTap: () => _isExpenseNotifier.value = false,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  SizedBox(height: 20.h),
+      
+                  _buildTextField(
+                    controller: _titleController,
+                    hint: 'Title',
+                  ),
+                  SizedBox(height: 16.h),
+      
+                  _buildTextField(
+                    controller: _amountController,
+                    hint: 'Amount ( ₹ )',
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  ),
+                  SizedBox(height: 24.h),
+      
+                  Text(
+                    'CATEGORY',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: AppColors.textPrimary.withValues(alpha: 0.6),
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+                  BlocBuilder<ExpenseBloc, ExpenseState>(
+                    builder: (context, state) {
+                      if (state is ExpenseLoaded) {
+                        if (state.categories.isEmpty) {
+                          return Padding(
+                            padding: EdgeInsets.symmetric(vertical: 8.h),
+                            child: Text(
+                              'No categories available. Please add one in Profile -> Categories.',
+                              style: TextStyle(color: AppColors.dangerRed, fontSize: 13.h),
                             ),
                           );
-                        },
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
-                SizedBox(height: 24.h),
-
-                const _InfoBanner(),
-                SizedBox(height: 30.h),
-
-                SizedBox(
-                  width: double.infinity,
-                  height: 48.h,
-                  child: ElevatedButton(
-                    onPressed: _saveTransaction,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.r),
+                        }
+                        
+                        return ValueListenableBuilder<CategoryModel?>(
+                          valueListenable: _selectedCategoryNotifier,
+                          builder: (context, selectedCategory, _) {
+                            // Auto select first if null
+                            if (selectedCategory == null && state.categories.isNotEmpty) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                _selectedCategoryNotifier.value = state.categories.first;
+                              });
+                            }
+                            
+                            return SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: state.categories.map((category) {
+                                  return _CategoryChip(
+                                    label: category.name,
+                                    isSelected: selectedCategory?.id == category.id,
+                                    onTap: () => _selectedCategoryNotifier.value = category,
+                                  );
+                                }).toList(),
+                              ),
+                            );
+                          },
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                  SizedBox(height: 24.h),
+      
+                  const _InfoBanner(),
+                  SizedBox(height: 30.h),
+      
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48.h,
+                    child: ElevatedButton(
+                      onPressed: _saveTransaction,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        elevation: 0,
                       ),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      'Save',
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      child: Text(
+                        'Save',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
