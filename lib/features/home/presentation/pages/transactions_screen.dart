@@ -61,7 +61,7 @@ class TransactionsScreen extends StatelessWidget {
               ),
               child: Center(
                 child: SvgPicture.asset(
-                  isExpense ? 'assets/images/shopping_bag.svg' : 'assets/images/drop_icon.svg',
+                  isExpense ? 'assets/images/shopping_bag.svg' : 'assets/images/liquid_drop.svg',
                   height: 15.h,
                   fit: BoxFit.fitHeight,
                 ),
