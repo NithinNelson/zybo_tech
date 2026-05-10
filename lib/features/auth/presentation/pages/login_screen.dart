@@ -9,91 +9,94 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 60.h),
-              Text(
-                'Get Started',
-                style: Theme.of(context).textTheme.displayLarge,
-              ),
-              SizedBox(height: 8.h),
-              Text(
-                'Log In Using Phone & OTP',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              SizedBox(height: 40.h),
-              Container(
-                height: 56.h,
-                decoration: BoxDecoration(
-                  color: AppColors.textPrimary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8.r),
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        body: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 60.h),
+                Text(
+                  'Get Started',
+                  style: Theme.of(context).textTheme.displayLarge,
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 20.h),
-                child: Row(
-                  children: [
-                    Text(
-                      '+91',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 12.h),
-                      child: Container(
-                        width: 1.h,
-                        height: 18.h,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    Expanded(
-                      child: TextField(
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: AppColors.textPrimary
-                        ),
-                        keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(
-                          hintText: 'Phone',
-                          hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: AppColors.textPrimary.withValues(alpha: 0.6)
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                      ),
-                    ),
-                  ],
+                SizedBox(height: 8.h),
+                Text(
+                  'Log In Using Phone & OTP',
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
-              ),
-              SizedBox(height: 24.h),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const OtpVerificationScreen(),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  minimumSize: Size(double.infinity, 48.h),
-                  shape: RoundedRectangleBorder(
+                SizedBox(height: 40.h),
+                Container(
+                  height: 56.h,
+                  decoration: BoxDecoration(
+                    color: AppColors.textPrimary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8.r),
                   ),
-                  elevation: 0,
+                  padding: EdgeInsets.symmetric(horizontal: 20.h),
+                  child: Row(
+                    children: [
+                      Text(
+                        '+91',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12.h),
+                        child: Container(
+                          width: 1.h,
+                          height: 18.h,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      Expanded(
+                        child: TextField(
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: AppColors.textPrimary
+                          ),
+                          keyboardType: TextInputType.phone,
+                          decoration: InputDecoration(
+                            hintText: 'Phone',
+                            hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                color: AppColors.textPrimary.withValues(alpha: 0.6)
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                child: Text(
-                  'Continue',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                SizedBox(height: 24.h),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const OtpVerificationScreen(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    minimumSize: Size(double.infinity, 48.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    'Continue',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

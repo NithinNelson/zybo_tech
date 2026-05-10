@@ -39,130 +39,136 @@ class _AddTransactionBottomSheetState extends State<AddTransactionBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return KeyboardAvoider(
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 24.h),
-        decoration: BoxDecoration(
-          color: Color(0xFF1F1F1F),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: KeyboardAvoider(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 24.h),
+          decoration: BoxDecoration(
+            color: Color(0xFF1F1F1F),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+          ),
+          child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Add Transaction',
-                  style: Theme.of(context).textTheme.displayLarge,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Add Transaction',
+                      style: Theme.of(context).textTheme.displayLarge,
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Text(
+                        'Close',
+                        style: GoogleFonts.inter(
+                          fontSize: 13.h,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Text(
-                    'Close',
-                    style: GoogleFonts.inter(
-                      fontSize: 13.h,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                SizedBox(height: 24.h),
+
+                ValueListenableBuilder<bool>(
+                  valueListenable: _isExpenseNotifier,
+                  builder: (context, isExpense, _) {
+                    return Container(
+                      height: 56.h,
+                      padding: EdgeInsets.all(4.h),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1F1F1F),
+                        borderRadius: BorderRadius.circular(8.r),
+                        border: Border.all(color: AppColors.charcoal),
+                      ),
+                      child: Row(
+                        children: [
+                          _ToggleItem(
+                            label: 'Expense',
+                            isActive: isExpense,
+                            onTap: () => _isExpenseNotifier.value = true,
+                          ),
+                          _ToggleItem(
+                            label: 'Income',
+                            isActive: !isExpense,
+                            onTap: () => _isExpenseNotifier.value = false,
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(height: 20.h),
+
+                _buildTextField(
+                  controller: _titleController,
+                  hint: 'Title',
+                ),
+                SizedBox(height: 16.h),
+
+                _buildTextField(
+                  controller: _amountController,
+                  hint: 'Amount ( ₹ )',
+                  keyboardType: TextInputType.number,
+                ),
+                SizedBox(height: 24.h),
+
+                Text(
+                  'CATEGORY',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: AppColors.textPrimary.withValues(alpha: 0.6),
+                  ),
+                ),
+                SizedBox(height: 12.h),
+                ValueListenableBuilder<String>(
+                  valueListenable: _selectedCategoryNotifier,
+                  builder: (context, selectedCategory, _) {
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: _categories.map((category) {
+                          return _CategoryChip(
+                            label: category,
+                            isSelected: selectedCategory == category,
+                            onTap: () => _selectedCategoryNotifier.value = category,
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(height: 24.h),
+
+                const _InfoBanner(),
+                SizedBox(height: 30.h),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 48.h,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      'Save',
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 24.h),
-
-            ValueListenableBuilder<bool>(
-              valueListenable: _isExpenseNotifier,
-              builder: (context, isExpense, _) {
-                return Container(
-                  height: 56.h,
-                  padding: EdgeInsets.all(4.h),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1F1F1F),
-                    borderRadius: BorderRadius.circular(8.r),
-                    border: Border.all(color: AppColors.charcoal),
-                  ),
-                  child: Row(
-                    children: [
-                      _ToggleItem(
-                        label: 'Expense',
-                        isActive: isExpense,
-                        onTap: () => _isExpenseNotifier.value = true,
-                      ),
-                      _ToggleItem(
-                        label: 'Income',
-                        isActive: !isExpense,
-                        onTap: () => _isExpenseNotifier.value = false,
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-            SizedBox(height: 20.h),
-
-            _buildTextField(
-              controller: _titleController,
-              hint: 'Title',
-            ),
-            SizedBox(height: 16.h),
-
-            _buildTextField(
-              controller: _amountController,
-              hint: 'Amount ( ₹ )',
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 24.h),
-
-            Text(
-              'CATEGORY',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color: AppColors.textPrimary.withValues(alpha: 0.6),
-              ),
-            ),
-            SizedBox(height: 12.h),
-            ValueListenableBuilder<String>(
-              valueListenable: _selectedCategoryNotifier,
-              builder: (context, selectedCategory, _) {
-                return SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: _categories.map((category) {
-                      return _CategoryChip(
-                        label: category,
-                        isSelected: selectedCategory == category,
-                        onTap: () => _selectedCategoryNotifier.value = category,
-                      );
-                    }).toList(),
-                  ),
-                );
-              },
-            ),
-            SizedBox(height: 24.h),
-
-            const _InfoBanner(),
-            SizedBox(height: 30.h),
-
-            SizedBox(
-              width: double.infinity,
-              height: 48.h,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  'Save',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
