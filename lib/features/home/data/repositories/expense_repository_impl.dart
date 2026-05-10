@@ -7,16 +7,19 @@ import '../../data/datasources/expense_remote_datasource.dart';
 import '../../data/models/category_model.dart';
 import '../../data/models/transaction_model.dart';
 import '../../domain/repositories/expense_repository.dart';
+import '../../../auth/domain/repositories/auth_repository.dart';
 
 class ExpenseRepositoryImpl implements ExpenseRepository {
   final ExpenseLocalDataSource localDataSource;
   final ExpenseRemoteDataSource remoteDataSource;
   final NotificationService notificationService;
+  final AuthRepository authRepository;
 
   ExpenseRepositoryImpl({
     required this.localDataSource,
     required this.remoteDataSource,
     required this.notificationService,
+    required this.authRepository,
   });
 
   @override
@@ -66,7 +69,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
       
       if (transaction.type == 'debit') {
         final totalDebit = await getCurrentMonthDebits();
-        const double limit = 1000.0;
+        final double limit = await authRepository.getBudgetLimit();
         
         if (totalDebit > limit && (totalDebit - transaction.amount) <= limit) {
           await notificationService.showBudgetAlertNotification(totalDebit, limit);

@@ -38,6 +38,7 @@ Future<void> init() async {
       localDataSource: sl(),
       remoteDataSource: sl(),
       notificationService: sl(),
+      authRepository: sl(),
     ),
   );
 
