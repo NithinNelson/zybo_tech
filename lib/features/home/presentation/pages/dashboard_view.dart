@@ -180,15 +180,36 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
             ],
           ),
           SizedBox(height: 16.h),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10.r),
-            child: LinearProgressIndicator(
-              value: percentage,
-              minHeight: 8.h,
-              backgroundColor: AppColors.lightGrey,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                  percentage >= 1.0 ? AppColors.dangerRed : const Color(0xFF4CAF50)),
-            ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return Stack(
+                children: [
+                  Container(
+                    height: 8.h,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: AppColors.lightGrey,
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                  ),
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 500),
+                    height: 8.h,
+                    width: constraints.maxWidth * percentage,
+                    decoration: BoxDecoration(
+                      gradient: percentage >= 1.0
+                        ? const LinearGradient(colors: [AppColors.dangerRed, Color(0xFF8B0000)])
+                        : const LinearGradient(
+                            colors: [Color(0xFF1DC533), Color(0xFF0E5F19)],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
           SizedBox(height: 8.h),
           Text(
