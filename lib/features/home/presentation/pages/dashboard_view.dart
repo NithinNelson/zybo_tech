@@ -25,103 +25,117 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.h),
-      child: BlocBuilder<ExpenseBloc, ExpenseState>(
-        builder: (context, state) {
-          if (state is ExpenseInitial || state is ExpenseLoading) {
-            return _buildShimmer();
-          }
+    return BlocBuilder<ExpenseBloc, ExpenseState>(
+      builder: (context, state) {
+        if (state is ExpenseInitial || state is ExpenseLoading) {
+          return _buildShimmer();
+        }
 
-          if (state is ExpenseLoaded) {
-            return CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(child: SizedBox(height: 30.h)),
-                SliverToBoxAdapter(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        if (state is ExpenseLoaded) {
+          return CustomScrollView(
+            slivers: [
+              SliverPadding(
+                padding: EdgeInsets.symmetric(horizontal: 20.h),
+                sliver: SliverToBoxAdapter(
+                  child: Column(
+                    children: [
+                      SizedBox(height: 30.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '👋 Welcome! ${state.nickname}',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontSize: 19.h,
+                                ),
+                          ),
+                          if (state.isSyncing)
+                            SizedBox(
+                              height: 20.h,
+                              width: 20.h,
+                              child: const CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                        ],
+                      ),
+                      SizedBox(height: 24.h),
+                      Row(
+                        children: [
+                          _buildStatCard(
+                            context: context,
+                            title: 'Total Income',
+                            amount: '₹${NumberFormat('#,##,###').format(state.totalIncome)}',
+                            isIncome: true,
+                            gradient: const LinearGradient(
+                              colors: [AppColors.forestGreen, AppColors.darkForestGreen],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                            ),
+                          ),
+                          SizedBox(width: 16.h),
+                          _buildStatCard(
+                            context: context,
+                            title: 'Total Expense',
+                            amount: '₹${NumberFormat('#,##,###').format(state.totalExpense)}',
+                            isIncome: false,
+                            gradient: const LinearGradient(
+                              colors: [AppColors.crimson, AppColors.blackMaroon],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 16.h),
+                      _buildLimitTracker(context, state.totalExpense, state.budgetLimit),
+                    ],
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Divider(
+                  color: AppColors.textPrimary.withValues(alpha: 0.05),
+                  thickness: 2.h,
+                  height: 48.h,
+                ),
+              ),
+              SliverPadding(
+                padding: EdgeInsets.symmetric(horizontal: 20.h),
+                sliver: SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '👋 Welcome! ${state.nickname}',
+                        'Recent Transactions',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontSize: 19.h,
-                        ),
+                              fontWeight: FontWeight.w500,
+                            ),
                       ),
-                      if (state.isSyncing)
-                        SizedBox(
-                          height: 20.h,
-                          width: 20.h,
-                          child: const CircularProgressIndicator(strokeWidth: 2),
-                        ),
+                      SizedBox(height: 16.h),
                     ],
                   ),
                 ),
-                SliverToBoxAdapter(child: SizedBox(height: 24.h)),
-                SliverToBoxAdapter(
-                  child: Row(
-                    children: [
-                      _buildStatCard(
-                        context: context,
-                        title: 'Total Income',
-                        amount: '₹${NumberFormat('#,##,###').format(state.totalIncome)}',
-                        isIncome: true,
-                        gradient: const LinearGradient(
-                          colors: [AppColors.forestGreen, AppColors.darkForestGreen],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                        ),
-                      ),
-                      SizedBox(width: 16.h),
-                      _buildStatCard(
-                        context: context,
-                        title: 'Total Expense',
-                        amount: '₹${NumberFormat('#,##,###').format(state.totalExpense)}',
-                        isIncome: false,
-                        gradient: const LinearGradient(
-                          colors: [AppColors.crimson, AppColors.blackMaroon],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SliverToBoxAdapter(child: SizedBox(height: 16.h)),
-                SliverToBoxAdapter(
-                  child: _buildLimitTracker(context, state.totalExpense, state.budgetLimit),
-                ),
-                SliverToBoxAdapter(
-                    child: Divider(
-                        color: AppColors.textPrimary.withValues(alpha: 0.05),
-                        thickness: 2.h,
-                        height: 48.h,
-                    ),
-                ),
-                SliverToBoxAdapter(
-                  child: Text(
-                    'Recent Transactions',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                SliverToBoxAdapter(child: SizedBox(height: 16.h)),
-                if (state.transactions.isEmpty)
-                  SliverToBoxAdapter(
+              ),
+              if (state.transactions.isEmpty)
+                SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.h),
+                  sliver: SliverToBoxAdapter(
                     child: Center(
                       child: Padding(
                         padding: EdgeInsets.symmetric(vertical: 40.h),
                         child: Text(
                           'No transactions yet.',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textPrimary.withValues(alpha: 0.5),
-                          ),
+                                color: AppColors.textPrimary.withValues(alpha: 0.5),
+                              ),
                         ),
                       ),
                     ),
-                  )
-                else
-                  SliverList(
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.h),
+                  sliver: SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
                         return _buildTransactionItem(context, state.transactions[index]);
@@ -129,18 +143,21 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
                       childCount: state.transactions.length > 10 ? 10 : state.transactions.length,
                     ),
                   ),
-                SliverToBoxAdapter(child: SizedBox(height: 180.h)),
-              ],
-            );
-          }
+                ),
+              SliverToBoxAdapter(child: SizedBox(height: 100.h)),
+            ],
+          );
+        }
 
-          if (state is ExpenseError) {
-            return Center(child: Text(state.message, style: const TextStyle(color: Colors.red)));
-          }
+        if (state is ExpenseError) {
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.h),
+            child: Center(child: Text(state.message, style: const TextStyle(color: Colors.red))),
+          );
+        }
 
-          return const SizedBox.shrink();
-        },
-      ),
+        return const SizedBox.shrink();
+      },
     );
   }
 
@@ -161,8 +178,8 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
           Text(
             'MONTHLY LIMIT',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: AppColors.textPrimary.withValues(alpha: 0.6),
-            ),
+                  color: AppColors.textPrimary.withValues(alpha: 0.6),
+                ),
           ),
           SizedBox(height: 8.h),
           Row(
@@ -174,8 +191,8 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
               Text(
                 ' / ₹${NumberFormat('#,##,###').format(limit)}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textPrimary.withValues(alpha: 0.6),
-                ),
+                      color: AppColors.textPrimary.withValues(alpha: 0.6),
+                    ),
               ),
             ],
           ),
@@ -198,12 +215,12 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
                     width: constraints.maxWidth * percentage,
                     decoration: BoxDecoration(
                       gradient: percentage >= 1.0
-                        ? const LinearGradient(colors: [AppColors.dangerRed, Color(0xFF8B0000)])
-                        : const LinearGradient(
-                            colors: [Color(0xFF1DC533), Color(0xFF0E5F19)],
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                          ),
+                          ? const LinearGradient(colors: [AppColors.dangerRed, Color(0xFF8B0000)])
+                          : const LinearGradient(
+                              colors: [Color(0xFF1DC533), Color(0xFF0E5F19)],
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                            ),
                       borderRadius: BorderRadius.circular(10.r),
                     ),
                   ),
@@ -213,12 +230,10 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
           ),
           SizedBox(height: 8.h),
           Text(
-            remaining > 0 
-                ? '${((1 - percentage) * 100).toStringAsFixed(0)}% Remaining' 
-                : 'Limit Exceeded!',
+            remaining > 0 ? '${((1 - percentage) * 100).toStringAsFixed(0)}% Remaining' : 'Limit Exceeded!',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: percentage >= 1.0 ? AppColors.dangerRed : AppColors.textPrimary.withValues(alpha: 0.6),
-            ),
+                  color: percentage >= 1.0 ? AppColors.dangerRed : AppColors.textPrimary.withValues(alpha: 0.6),
+                ),
           ),
         ],
       ),
@@ -279,7 +294,7 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
     final bool isCredit = transaction.type == 'credit';
     final String sign = isCredit ? '+' : '-';
     final Color color = isCredit ? AppColors.emeraldGreen : AppColors.alertRed;
-    
+
     return Container(
       margin: EdgeInsets.only(bottom: 12.h),
       padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 14.h),
@@ -325,9 +340,9 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
                 Text(
                   transaction.categoryName ?? '--',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontSize: 13.h,
-                    color: AppColors.textPrimary.withValues(alpha: 0.6),
-                  ),
+                        fontSize: 13.h,
+                        color: AppColors.textPrimary.withValues(alpha: 0.6),
+                      ),
                 ),
               ],
             ),
@@ -339,8 +354,8 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
               Text(
                 DateFormat('dd MMM yyyy').format(transaction.timestamp),
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: AppColors.silver,
-                ),
+                      color: AppColors.silver,
+                    ),
               ),
               Text(
                 '$sign₹${transaction.amount.toStringAsFixed(0)}',
@@ -368,43 +383,46 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
   }
 
   Widget _buildShimmer() {
-    return Shimmer.fromColors(
-      baseColor: AppColors.surfaceBlack,
-      highlightColor: AppColors.charcoal,
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(child: SizedBox(height: 30.h)),
-          SliverToBoxAdapter(
-            child: Container(width: 200.w, height: 24.h, color: Colors.white),
-          ),
-          SliverToBoxAdapter(child: SizedBox(height: 24.h)),
-          SliverToBoxAdapter(
-            child: Row(
-              children: [
-                Expanded(child: Container(height: 100.h, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12.r)))),
-                SizedBox(width: 16.h),
-                Expanded(child: Container(height: 100.h, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12.r)))),
-              ],
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20.h),
+      child: Shimmer.fromColors(
+        baseColor: AppColors.surfaceBlack,
+        highlightColor: AppColors.charcoal,
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(child: SizedBox(height: 30.h)),
+            SliverToBoxAdapter(
+              child: Container(width: 200.w, height: 24.h, color: Colors.white),
             ),
-          ),
-          SliverToBoxAdapter(child: SizedBox(height: 16.h)),
-          SliverToBoxAdapter(
-            child: Container(height: 120.h, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12.r))),
-          ),
-          SliverToBoxAdapter(child: SizedBox(height: 48.h)),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                return Container(
-                  margin: EdgeInsets.only(bottom: 12.h),
-                  height: 60.h,
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16.r)),
-                );
-              },
-              childCount: 6,
+            SliverToBoxAdapter(child: SizedBox(height: 24.h)),
+            SliverToBoxAdapter(
+              child: Row(
+                children: [
+                  Expanded(child: Container(height: 100.h, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12.r)))),
+                  SizedBox(width: 16.h),
+                  Expanded(child: Container(height: 100.h, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12.r)))),
+                ],
+              ),
             ),
-          ),
-        ],
+            SliverToBoxAdapter(child: SizedBox(height: 16.h)),
+            SliverToBoxAdapter(
+              child: Container(height: 120.h, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12.r))),
+            ),
+            SliverToBoxAdapter(child: SizedBox(height: 48.h)),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  return Container(
+                    margin: EdgeInsets.only(bottom: 12.h),
+                    height: 60.h,
+                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16.r)),
+                  );
+                },
+                childCount: 6,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
