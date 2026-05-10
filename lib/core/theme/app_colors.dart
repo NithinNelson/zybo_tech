@@ -25,6 +25,7 @@ class AppColors {
   static const Color darkForestGreen = Color(0xFF031C00);
   static const Color emeraldGreen = Color(0xFF20DE39);
   static const Color deepEmerald = Color(0xFF147721);
+  static const Color emeraldPrimary = Color(0xFF008500);
   static const Color crimson = Color(0xFFB50303);
   static const Color blackMaroon = Color(0xFF250000);
   static const Color dangerRed = Color(0xFFE50000);

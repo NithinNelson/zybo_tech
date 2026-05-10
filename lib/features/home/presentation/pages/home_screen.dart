@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import 'dashboard_view.dart';
 import 'transactions_screen.dart';
 import 'profile_screen.dart';
+import '../widgets/add_transaction_bottom_sheet.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -72,7 +73,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     opacity: currentIndex == 0 ? 1.0 : 0.0,
                     child: IgnorePointer(
                       ignoring: currentIndex != 0,
-                      child: _AddButton(),
+                    child: _AddButton(
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          useSafeArea: true,
+                          isDismissible: false,
+                          builder: (context) => const AddTransactionBottomSheet(),
+                        );
+                      },
+                    ),
                     ),
                   );
                 },
@@ -189,9 +201,15 @@ class _NavItem extends StatelessWidget {
 }
 
 class _AddButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _AddButton({required this.onTap});
+
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
       width: 56.h,
       height: 56.h,
       decoration: BoxDecoration(
@@ -220,6 +238,7 @@ class _AddButton extends StatelessWidget {
           fit: BoxFit.fitHeight,
         ),
       ),
+    ),
     );
   }
 }
