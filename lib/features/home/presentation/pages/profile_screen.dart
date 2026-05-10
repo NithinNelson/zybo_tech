@@ -3,14 +3,22 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return SingleChildScrollView(
-      padding: EdgeInsets.symmetric(horizontal: 20.w),
-      physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.symmetric(horizontal: 20.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

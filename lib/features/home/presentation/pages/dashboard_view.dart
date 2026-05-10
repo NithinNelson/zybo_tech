@@ -4,15 +4,23 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
 
-class DashboardView extends StatelessWidget {
+class DashboardView extends StatefulWidget {
   const DashboardView({super.key});
 
   @override
+  State<DashboardView> createState() => _DashboardViewState();
+}
+
+class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.h),
       child: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
         slivers: [
           SliverToBoxAdapter(child: SizedBox(height: 30.h)),
           SliverToBoxAdapter(
@@ -131,7 +139,7 @@ class DashboardView extends StatelessWidget {
               childCount: 6,
             ),
           ),
-          SliverToBoxAdapter(child: SizedBox(height: 100.h)),
+          SliverToBoxAdapter(child: SizedBox(height: 180.h)),
         ],
       ),
     );

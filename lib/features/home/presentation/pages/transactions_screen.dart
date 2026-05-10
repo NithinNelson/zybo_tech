@@ -4,11 +4,20 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
 
-class TransactionsScreen extends StatelessWidget {
+class TransactionsScreen extends StatefulWidget {
   const TransactionsScreen({super.key});
 
   @override
+  State<TransactionsScreen> createState() => _TransactionsScreenState();
+}
+
+class _TransactionsScreenState extends State<TransactionsScreen> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -25,8 +34,7 @@ class TransactionsScreen extends StatelessWidget {
         SizedBox(height: 24.h),
         Expanded(
           child: ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: 20.h),
-            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.only(left: 20.h, right: 20.h, bottom: 100.h),
             itemCount: 15,
             itemBuilder: (context, index) {
               return _buildTransactionItem(context, index);
