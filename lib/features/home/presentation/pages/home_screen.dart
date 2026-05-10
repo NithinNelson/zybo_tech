@@ -64,7 +64,19 @@ class _HomeScreenState extends State<HomeScreen> {
             Positioned(
               bottom: 120.h,
               right: 20.h,
-              child: _AddButton(),
+              child: ValueListenableBuilder<int>(
+                valueListenable: _currentIndexNotifier,
+                builder: (context, currentIndex, _) {
+                  return AnimatedOpacity(
+                    duration: const Duration(milliseconds: 200),
+                    opacity: currentIndex == 0 ? 1.0 : 0.0,
+                    child: IgnorePointer(
+                      ignoring: currentIndex != 0,
+                      child: _AddButton(),
+                    ),
+                  );
+                },
+              ),
             ),
 
             Positioned(
