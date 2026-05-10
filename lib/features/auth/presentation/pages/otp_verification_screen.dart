@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../home/presentation/bloc/expense_bloc.dart';
+import '../../../home/presentation/bloc/expense_event.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
@@ -98,6 +100,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               );
             } else if (state is AuthAuthenticated) {
               _countdownTimer?.cancel();
+              context.read<ExpenseBloc>().add(FetchInitialDataEvent());
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => const HomeScreen()),
                 (route) => false,

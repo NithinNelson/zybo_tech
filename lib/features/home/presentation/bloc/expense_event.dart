@@ -48,3 +48,5 @@ class DeleteCategoryEvent extends ExpenseEvent {
 }
 
 class SyncDataEvent extends ExpenseEvent {}
+
+class FetchInitialDataEvent extends ExpenseEvent {}

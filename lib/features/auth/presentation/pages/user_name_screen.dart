@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../home/presentation/bloc/expense_bloc.dart';
+import '../../../home/presentation/bloc/expense_event.dart';
 import '../../../home/presentation/pages/home_screen.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
@@ -49,6 +51,7 @@ class _UserNameScreenState extends State<UserNameScreen> {
                 SnackBar(content: Text(state.message), backgroundColor: AppColors.dangerRed),
               );
             } else if (state is AuthAuthenticated) {
+              context.read<ExpenseBloc>().add(FetchInitialDataEvent());
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => const HomeScreen()),
                 (route) => false,

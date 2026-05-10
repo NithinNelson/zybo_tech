@@ -18,6 +18,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     on<AddCategoryEvent>(_onAddCategory);
     on<DeleteCategoryEvent>(_onDeleteCategory);
     on<SyncDataEvent>(_onSyncData);
+    on<FetchInitialDataEvent>(_onFetchInitialData);
   }
 
   Future<void> _onLoadDashboard(LoadDashboardEvent event, Emitter<ExpenseState> emit) async {
@@ -142,6 +143,25 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       if (error != null && !emit.isDone) emit(ExpenseError(error!));
     }
 
+    await _loadData(emit);
+  }
+
+  Future<void> _onFetchInitialData(FetchInitialDataEvent event, Emitter<ExpenseState> emit) async {
+    if (state is ExpenseLoaded) {
+      final currentState = state as ExpenseLoaded;
+      if (!emit.isDone) emit(currentState.copyWith(isSyncing: true));
+    } else {
+      if (!emit.isDone) emit(ExpenseLoading());
+    }
+    
+    final result = await repository.fetchInitialData();
+    
+    if (result.isLeft()) {
+      String? error;
+      result.fold((l) => error = l, (r) {});
+      if (error != null && !emit.isDone) emit(ExpenseError(error!));
+    }
+    
     await _loadData(emit);
   }
 }

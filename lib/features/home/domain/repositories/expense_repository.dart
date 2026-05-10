@@ -12,6 +12,7 @@ abstract class ExpenseRepository {
   Future<Either<String, void>> deleteTransaction(String id);
 
   Future<Either<String, void>> syncData();
+  Future<Either<String, void>> fetchInitialData();
   
   // Custom query for notifications
   Future<double> getCurrentMonthDebits();

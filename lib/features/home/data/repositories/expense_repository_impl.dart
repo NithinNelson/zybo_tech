@@ -142,9 +142,49 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
         await localDataSource.markTransactionSynced(syncedIds);
       }
 
+      // Fetch from remote and ensure local data matches remote completely
+      final remoteCategories = await remoteDataSource.getCategories();
+      for (final cat in remoteCategories) {
+        await localDataSource.addCategory(cat.copyWith(isSynced: true));
+      }
+
+      final remoteTransactions = await remoteDataSource.getTransactions();
+      for (final tx in remoteTransactions) {
+        await localDataSource.addTransaction(tx.copyWith(isSynced: true));
+      }
+
       return const Right(null);
     } catch (e) {
       return Left('Sync failed: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<Either<String, void>> fetchInitialData() async {
+    try {
+      final remoteCategories = await remoteDataSource.getCategories();
+      final localCategories = await localDataSource.getCategories(includeDeleted: true);
+      final localCategoryIds = localCategories.map((c) => c.id).toSet();
+
+      for (final cat in remoteCategories) {
+        if (!localCategoryIds.contains(cat.id)) {
+          await localDataSource.addCategory(cat.copyWith(isSynced: true));
+        }
+      }
+
+      final remoteTransactions = await remoteDataSource.getTransactions();
+      final localTransactions = await localDataSource.getTransactions(includeDeleted: true);
+      final localTransactionIds = localTransactions.map((t) => t.id).toSet();
+
+      for (final tx in remoteTransactions) {
+        if (!localTransactionIds.contains(tx.id)) {
+          await localDataSource.addTransaction(tx.copyWith(isSynced: true));
+        }
+      }
+
+      return const Right(null);
+    } catch (e) {
+      return Left('Initial fetch failed: ${e.toString()}');
     }
   }
 }
