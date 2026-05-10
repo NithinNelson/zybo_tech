@@ -8,6 +8,9 @@ import 'features/home/presentation/bloc/expense_bloc.dart';
 import 'features/home/presentation/bloc/expense_event.dart';
 import 'features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'features/onboarding/presentation/pages/onboarding_screen.dart';
+import 'features/auth/presentation/bloc/auth_event.dart';
+import 'features/auth/presentation/bloc/auth_state.dart';
+import 'features/home/presentation/pages/home_screen.dart';
 import 'injection_container.dart' as di;
 
 void main() async {
@@ -46,7 +49,21 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: AppTheme.darkTheme,
             themeMode: ThemeMode.dark,
-            home: const OnboardingScreen(),
+            home: BlocBuilder<AuthBloc, AuthState>(
+              bloc: di.sl<AuthBloc>()..add(CheckAuthStatusEvent()),
+              builder: (context, state) {
+                if (state is AuthAuthenticated) {
+                  return const HomeScreen();
+                } else if (state is AuthUnauthenticated) {
+                  return const OnboardingScreen();
+                }
+                return const Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              },
+            ),
           ),
         );
       },

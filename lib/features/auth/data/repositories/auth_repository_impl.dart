@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_remote_datasource.dart';
+import '../../../../core/database/database_helper.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
@@ -46,5 +47,11 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<String?> getNickname() async {
     return sharedPreferences.getString('nickname');
+  }
+
+  @override
+  Future<void> logout() async {
+    await sharedPreferences.clear();
+    await DatabaseHelper.instance.clearAllData();
   }
 }

@@ -10,6 +10,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SendOtpEvent>(_onSendOtp);
     on<VerifyOtpEvent>(_onVerifyOtp);
     on<CreateAccountEvent>(_onCreateAccount);
+    on<CheckAuthStatusEvent>(_onCheckAuthStatus);
+    on<LogoutEvent>(_onLogout);
   }
 
   Future<void> _onSendOtp(SendOtpEvent event, Emitter<AuthState> emit) async {
@@ -66,5 +68,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await repository.saveAuthData(token, event.nickname);
       emit(AuthAuthenticated());
     }
+  }
+
+  Future<void> _onCheckAuthStatus(CheckAuthStatusEvent event, Emitter<AuthState> emit) async {
+    final token = await repository.getToken();
+    if (token != null && token.isNotEmpty) {
+      emit(AuthAuthenticated());
+    } else {
+      emit(AuthUnauthenticated());
+    }
+  }
+
+  Future<void> _onLogout(LogoutEvent event, Emitter<AuthState> emit) async {
+    await repository.logout();
+    emit(AuthUnauthenticated());
   }
 }

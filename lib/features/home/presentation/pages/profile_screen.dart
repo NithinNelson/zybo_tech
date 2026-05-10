@@ -11,6 +11,9 @@ import '../bloc/expense_state.dart';
 import '../../data/models/category_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../injection_container.dart' as di;
+import '../../../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../../../features/auth/presentation/bloc/auth_event.dart';
+import '../../../../features/onboarding/presentation/pages/onboarding_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -364,7 +367,63 @@ class _ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCl
             SizedBox(
               width: double.infinity,
               child: TextButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      backgroundColor: const Color(0xFF1E1E1E),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.r),
+                      ),
+                      title: Text(
+                        'Log Out',
+                        style: GoogleFonts.inter(
+                          fontSize: 17.h,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      content: Text(
+                        'Are you sure you want to log out? All local data will be cleared.',
+                        style: GoogleFonts.inter(
+                          fontSize: 14.h,
+                          color: AppColors.textPrimary.withValues(alpha: 0.7),
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          child: Text(
+                            'Cancel',
+                            style: GoogleFonts.inter(
+                              fontSize: 14.h,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textPrimary.withValues(alpha: 0.6),
+                            ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(ctx);
+                            context.read<AuthBloc>().add(LogoutEvent());
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+                              (route) => false,
+                            );
+                          },
+                          child: Text(
+                            'Log Out',
+                            style: GoogleFonts.inter(
+                              fontSize: 14.h,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFFFF2929),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
                 style: TextButton.styleFrom(
                   backgroundColor: AppColors.background,
                   padding: EdgeInsets.all(16.h),

@@ -46,3 +46,7 @@ class CreateAccountEvent extends AuthEvent {
   @override
   List<Object> get props => [phone, nickname];
 }
+
+class CheckAuthStatusEvent extends AuthEvent {}
+
+class LogoutEvent extends AuthEvent {}
