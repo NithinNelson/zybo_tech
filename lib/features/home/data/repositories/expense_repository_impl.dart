@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../data/datasources/expense_local_datasource.dart';
@@ -165,6 +167,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
       final remoteCategories = await remoteDataSource.getCategories();
       final localCategories = await localDataSource.getCategories(includeDeleted: true);
       final localCategoryIds = localCategories.map((c) => c.id).toSet();
+      log('--------remoteCategories--------${remoteCategories.length}');
 
       for (final cat in remoteCategories) {
         if (!localCategoryIds.contains(cat.id)) {

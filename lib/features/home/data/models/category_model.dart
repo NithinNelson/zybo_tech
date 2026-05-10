@@ -15,7 +15,7 @@ class CategoryModel extends Equatable {
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
     return CategoryModel(
-      id: json['id'],
+      id: json['id'] ?? json['category_id'],
       name: json['name'],
       isSynced: json['is_synced'] == 1 || json['is_synced'] == true,
       isDeleted: json['is_deleted'] == 1 || json['is_deleted'] == true,

@@ -12,7 +12,6 @@ class ApiClient {
 
   Future<Map<String, String>> _getHeaders() async {
     final token = sharedPreferences.getString('auth_token');
-    log('-----token-------$token');
     return {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
@@ -22,7 +21,11 @@ class ApiClient {
   Future<http.Response> post(String endpoint, {Map<String, dynamic>? body}) async {
     final headers = await _getHeaders();
     final url = Uri.parse('$baseUrl$endpoint');
-    
+    log('-----method-------post');
+    log('-----url-------$url');
+    log('-----headers-------$headers');
+    log('-----body-------$body');
+
     return await client.post(
       url,
       headers: headers,
@@ -33,6 +36,9 @@ class ApiClient {
   Future<http.Response> get(String endpoint) async {
     final headers = await _getHeaders();
     final url = Uri.parse('$baseUrl$endpoint');
+    log('-----method-------get');
+    log('-----url-------$url');
+    log('-----headers-------$headers');
     
     return await client.get(
       url,
@@ -43,6 +49,10 @@ class ApiClient {
   Future<http.Response> delete(String endpoint, {Map<String, dynamic>? body}) async {
     final headers = await _getHeaders();
     final url = Uri.parse('$baseUrl$endpoint');
+    log('-----method-------delete');
+    log('-----url-------$url');
+    log('-----headers-------$headers');
+    log('-----body-------$body');
 
     final request = http.Request('DELETE', url)
       ..headers.addAll(headers);
