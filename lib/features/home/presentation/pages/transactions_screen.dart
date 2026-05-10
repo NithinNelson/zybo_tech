@@ -40,18 +40,18 @@ class _TransactionsScreenState extends State<TransactionsScreen> with AutomaticK
                   fontSize: 19.h,
                 ),
               ),
-              BlocBuilder<ExpenseBloc, ExpenseState>(
-                builder: (context, state) {
-                  return IconButton(
-                    onPressed: () {
-                      context.read<ExpenseBloc>().add(SyncDataEvent());
-                    },
-                    icon: state is ExpenseLoaded && state.isSyncing
-                        ? SizedBox(height: 20.h, width: 20.h, child: const CircularProgressIndicator(strokeWidth: 2))
-                        : Icon(Icons.sync, color: AppColors.primary, size: 24.h),
-                  );
-                },
-              ),
+              // BlocBuilder<ExpenseBloc, ExpenseState>(
+              //   builder: (context, state) {
+              //     return IconButton(
+              //       onPressed: () {
+              //         context.read<ExpenseBloc>().add(SyncDataEvent());
+              //       },
+              //       icon: state is ExpenseLoaded && state.isSyncing
+              //           ? SizedBox(height: 20.h, width: 20.h, child: const CircularProgressIndicator(strokeWidth: 2))
+              //           : Icon(Icons.sync, color: AppColors.primary, size: 24.h),
+              //     );
+              //   },
+              // ),
             ],
           ),
         ),
@@ -62,7 +62,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> with AutomaticK
               if (state is ExpenseInitial || state is ExpenseLoading) {
                 return _buildShimmer();
               }
-              
+
               if (state is ExpenseError) {
                 return Center(child: Text(state.message, style: const TextStyle(color: Colors.red)));
               }
