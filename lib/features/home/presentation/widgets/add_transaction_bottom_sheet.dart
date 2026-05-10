@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:keyboard_avoider/keyboard_avoider.dart';
+import 'package:uuid/uuid.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../bloc/expense_bloc.dart';
+import '../bloc/expense_event.dart';
+import '../bloc/expense_state.dart';
+import '../../data/models/category_model.dart';
+import '../../data/models/transaction_model.dart';
 
 class AddTransactionBottomSheet extends StatefulWidget {
   const AddTransactionBottomSheet({super.key});
@@ -14,18 +21,26 @@ class AddTransactionBottomSheet extends StatefulWidget {
 
 class _AddTransactionBottomSheetState extends State<AddTransactionBottomSheet> {
   late final ValueNotifier<bool> _isExpenseNotifier;
-  late final ValueNotifier<String> _selectedCategoryNotifier;
+  late final ValueNotifier<CategoryModel?> _selectedCategoryNotifier;
   
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
 
-  final List<String> _categories = ['Food', 'Bills', 'Transport', 'Shopping'];
+  final _uuid = const Uuid();
 
   @override
   void initState() {
     super.initState();
     _isExpenseNotifier = ValueNotifier<bool>(true);
-    _selectedCategoryNotifier = ValueNotifier<String>('Bills');
+    _selectedCategoryNotifier = ValueNotifier<CategoryModel?>(null);
+    
+    // Auto-select first category if available
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = context.read<ExpenseBloc>().state;
+      if (state is ExpenseLoaded && state.categories.isNotEmpty) {
+        _selectedCategoryNotifier.value = state.categories.first;
+      }
+    });
   }
 
   @override
@@ -37,6 +52,43 @@ class _AddTransactionBottomSheetState extends State<AddTransactionBottomSheet> {
     super.dispose();
   }
 
+  void _saveTransaction() {
+    final title = _titleController.text.trim();
+    final amountText = _amountController.text.trim();
+    final category = _selectedCategoryNotifier.value;
+    final isExpense = _isExpenseNotifier.value;
+
+    if (title.isEmpty || amountText.isEmpty || category == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all fields and select a category')),
+      );
+      return;
+    }
+
+    final amount = double.tryParse(amountText);
+    if (amount == null || amount <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid amount')),
+      );
+      return;
+    }
+
+    final transaction = TransactionModel(
+      id: _uuid.v4(),
+      amount: amount,
+      note: title,
+      type: isExpense ? 'debit' : 'credit',
+      categoryId: category.id,
+      categoryName: category.name,
+      timestamp: DateTime.now(),
+      isSynced: false,
+      isDeleted: false,
+    );
+
+    context.read<ExpenseBloc>().add(AddTransactionEvent(transaction));
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -45,11 +97,11 @@ class _AddTransactionBottomSheetState extends State<AddTransactionBottomSheet> {
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 24.h),
           decoration: BoxDecoration(
-            color: Color(0xFF1F1F1F),
+            color: const Color(0xFF1F1F1F),
             borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
           ),
           child: SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
+            physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,7 +167,7 @@ class _AddTransactionBottomSheetState extends State<AddTransactionBottomSheet> {
                 _buildTextField(
                   controller: _amountController,
                   hint: 'Amount ( ₹ )',
-                  keyboardType: TextInputType.number,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 ),
                 SizedBox(height: 24.h),
 
@@ -126,21 +178,45 @@ class _AddTransactionBottomSheetState extends State<AddTransactionBottomSheet> {
                   ),
                 ),
                 SizedBox(height: 12.h),
-                ValueListenableBuilder<String>(
-                  valueListenable: _selectedCategoryNotifier,
-                  builder: (context, selectedCategory, _) {
-                    return SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: _categories.map((category) {
-                          return _CategoryChip(
-                            label: category,
-                            isSelected: selectedCategory == category,
-                            onTap: () => _selectedCategoryNotifier.value = category,
+                BlocBuilder<ExpenseBloc, ExpenseState>(
+                  builder: (context, state) {
+                    if (state is ExpenseLoaded) {
+                      if (state.categories.isEmpty) {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.h),
+                          child: Text(
+                            'No categories available. Please add one in Profile -> Categories.',
+                            style: TextStyle(color: AppColors.dangerRed, fontSize: 13.h),
+                          ),
+                        );
+                      }
+                      
+                      return ValueListenableBuilder<CategoryModel?>(
+                        valueListenable: _selectedCategoryNotifier,
+                        builder: (context, selectedCategory, _) {
+                          // Auto select first if null
+                          if (selectedCategory == null && state.categories.isNotEmpty) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              _selectedCategoryNotifier.value = state.categories.first;
+                            });
+                          }
+                          
+                          return SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: state.categories.map((category) {
+                                return _CategoryChip(
+                                  label: category.name,
+                                  isSelected: selectedCategory?.id == category.id,
+                                  onTap: () => _selectedCategoryNotifier.value = category,
+                                );
+                              }).toList(),
+                            ),
                           );
-                        }).toList(),
-                      ),
-                    );
+                        },
+                      );
+                    }
+                    return const SizedBox.shrink();
                   },
                 ),
                 SizedBox(height: 24.h),
@@ -152,7 +228,7 @@ class _AddTransactionBottomSheetState extends State<AddTransactionBottomSheet> {
                   width: double.infinity,
                   height: 48.h,
                   child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: _saveTransaction,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       shape: RoundedRectangleBorder(
@@ -257,7 +333,7 @@ class _CategoryChip extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 8.h),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.primary.withValues(alpha: 0.5) : Color(0xFF2A2A2A),
+            color: isSelected ? AppColors.primary.withValues(alpha: 0.5) : const Color(0xFF2A2A2A),
             borderRadius: BorderRadius.circular(8.r),
             border: Border.all(
               color: isSelected ? AppColors.iceBlue : AppColors.textPrimary.withValues(alpha: 0.2),
@@ -301,7 +377,7 @@ class _InfoBanner extends StatelessWidget {
           SizedBox(width: 12.h),
           Expanded(
             child: Text(
-              'Everything you add here is saved only on your device.',
+              'Everything you add here is saved only on your device until you sync.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.w400,
               ),
