@@ -19,6 +19,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     on<DeleteCategoryEvent>(_onDeleteCategory);
     on<SyncDataEvent>(_onSyncData);
     on<FetchInitialDataEvent>(_onFetchInitialData);
+    on<SetBudgetLimitEvent>(_onSetBudgetLimit);
   }
 
   Future<void> _onLoadDashboard(LoadDashboardEvent event, Emitter<ExpenseState> emit) async {
@@ -30,6 +31,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     final transactionsResult = await repository.getTransactions();
     final categoriesResult = await repository.getCategories();
     final nickname = await authRepository.getNickname() ?? '';
+    final budgetLimit = await authRepository.getBudgetLimit();
 
     transactionsResult.fold(
       (error) => emit(ExpenseError(error)),
@@ -55,6 +57,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
               totalIncome: totalIncome,
               isSyncing: isSyncing,
               nickname: nickname,
+              budgetLimit: budgetLimit,
             ));
           },
         );
@@ -162,6 +165,11 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       if (error != null && !emit.isDone) emit(ExpenseError(error!));
     }
     
+    await _loadData(emit);
+  }
+
+  Future<void> _onSetBudgetLimit(SetBudgetLimitEvent event, Emitter<ExpenseState> emit) async {
+    await authRepository.saveBudgetLimit(event.limit);
     await _loadData(emit);
   }
 }

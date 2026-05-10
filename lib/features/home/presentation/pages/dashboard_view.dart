@@ -63,7 +63,7 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
                       _buildStatCard(
                         context: context,
                         title: 'Total Income',
-                        amount: '₹${state.totalIncome.toStringAsFixed(0)}',
+                        amount: '₹${NumberFormat('#,##,###').format(state.totalIncome)}',
                         isIncome: true,
                         gradient: const LinearGradient(
                           colors: [AppColors.forestGreen, AppColors.darkForestGreen],
@@ -75,7 +75,7 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
                       _buildStatCard(
                         context: context,
                         title: 'Total Expense',
-                        amount: '₹${state.totalExpense.toStringAsFixed(0)}',
+                        amount: '₹${NumberFormat('#,##,###').format(state.totalExpense)}',
                         isIncome: false,
                         gradient: const LinearGradient(
                           colors: [AppColors.crimson, AppColors.blackMaroon],
@@ -88,7 +88,7 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
                 ),
                 SliverToBoxAdapter(child: SizedBox(height: 16.h)),
                 SliverToBoxAdapter(
-                  child: _buildLimitTracker(context, state.totalExpense),
+                  child: _buildLimitTracker(context, state.totalExpense, state.budgetLimit),
                 ),
                 SliverToBoxAdapter(
                     child: Divider(
@@ -144,8 +144,7 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
     );
   }
 
-  Widget _buildLimitTracker(BuildContext context, double totalExpense) {
-    const double limit = 1000.0;
+  Widget _buildLimitTracker(BuildContext context, double totalExpense, double limit) {
     final double percentage = (totalExpense / limit).clamp(0.0, 1.0);
     final double remaining = limit - totalExpense;
 
@@ -169,11 +168,11 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
           Row(
             children: [
               Text(
-                '₹${totalExpense.toStringAsFixed(0)}',
+                '₹${NumberFormat('#,##,###').format(totalExpense)}',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               Text(
-                ' / ₹${limit.toStringAsFixed(0)}',
+                ' / ₹${NumberFormat('#,##,###').format(limit)}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: AppColors.textPrimary.withValues(alpha: 0.6),
                 ),

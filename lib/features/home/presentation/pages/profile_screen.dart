@@ -16,6 +16,7 @@ import '../../../../features/auth/presentation/bloc/auth_event.dart';
 import '../../../../features/onboarding/presentation/pages/onboarding_screen.dart';
 import '../../../../features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import '../../../../features/onboarding/presentation/bloc/onboarding_event.dart';
+import 'package:intl/intl.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -26,6 +27,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveClientMixin {
   final TextEditingController _categoryController = TextEditingController();
+  final TextEditingController _limitController = TextEditingController();
   final _uuid = const Uuid();
   String _nickname = 'User';
 
@@ -48,6 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCl
   @override
   void dispose() {
     _categoryController.dispose();
+    _limitController.dispose();
     super.dispose();
   }
 
@@ -126,77 +129,86 @@ class _ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCl
               height: 36.h,
             ),
 
-            Container(
-              padding: EdgeInsets.all(16.h),
-              decoration: BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.circular(12.r),
-                border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.1)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionHeader('ALERT LIMIT (₹)'),
-                  Row(
+            BlocBuilder<ExpenseBloc, ExpenseState>(
+              builder: (context, state) {
+                final currentLimit = state is ExpenseLoaded ? state.budgetLimit : 1000.0;
+                
+                return Container(
+                  padding: EdgeInsets.all(16.h),
+                  decoration: BoxDecoration(
+                    color: AppColors.background,
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.1)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Container(
-                          height: 48.h,
-                          decoration: BoxDecoration(
-                            color: AppColors.textPrimary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12.r),
-                          ),
-                          child: Row(
-                            children: [
-                              SizedBox(width: 16.h),
-                              Text(
-                                'Amount ',
-                                style: GoogleFonts.inter(
-                                  fontSize: 17.h,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.textPrimary.withValues(alpha: 0.6),
+                      _buildSectionHeader('ALERT LIMIT (₹)'),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 48.h,
+                              decoration: BoxDecoration(
+                                color: AppColors.textPrimary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                              child: TextField(
+                                controller: _limitController,
+                                style: GoogleFonts.inter(color: AppColors.textPrimary, fontSize: 14.h),
+                                decoration: InputDecoration(
+                                  hintText: 'Amount ( ₹ )',
+                                  hintStyle: GoogleFonts.inter(
+                                    fontSize: 16.h,
+                                    fontWeight: FontWeight.w400,
+                                    color: AppColors.textPrimary.withValues(alpha: 0.6),
+                                  ),
+                                  border: InputBorder.none,
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 16.h),
                                 ),
                               ),
-                              Text(
-                                '( ₹ )',
-                                style: GoogleFonts.inter(
-                                  fontSize: 17.h,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.textPrimary,
-                                ),
+                            ),
+                          ),
+                          SizedBox(width: 12.h),
+                          ElevatedButton(
+                            onPressed: () {
+                              final limit = double.tryParse(_limitController.text);
+                              if (limit != null) {
+                                context.read<ExpenseBloc>().add(SetBudgetLimitEvent(limit));
+                                _limitController.clear();
+                                FocusManager.instance.primaryFocus?.unfocus();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Monthly limit updated to ₹$limit')),
+                                );
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              minimumSize: Size(54.h, 48.h),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.r),
                               ),
-                            ],
+                            ),
+                            child: Text(
+                              'Set',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
                           ),
-                        ),
+                        ],
                       ),
-                      SizedBox(width: 12.h),
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          minimumSize: Size(54.h, 48.h),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.r),
-                          ),
+                      SizedBox(height: 12.h),
+                      Text(
+                        'Current Limit: ₹${NumberFormat('#,##,###').format(currentLimit)}',
+                        style: GoogleFonts.inter(
+                          fontSize: 13.h,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.textPrimary,
                         ),
-                        child: Text(
-                            'Set',
-                            style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ),
+                      )
                     ],
                   ),
-                  SizedBox(height: 12.h),
-                  Text(
-                    'Current Limit: ₹1,000',
-                    style: GoogleFonts.inter(
-                      fontSize: 13.h,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.textPrimary,
-                    ),
-                  )
-                ],
-              ),
+                );
+              },
             ),
 
             Divider(

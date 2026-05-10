@@ -7,4 +7,6 @@ abstract class AuthRepository {
   Future<String?> getToken();
   Future<String?> getNickname();
   Future<void> logout();
+  Future<void> saveBudgetLimit(double limit);
+  Future<double> getBudgetLimit();
 }

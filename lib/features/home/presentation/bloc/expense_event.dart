@@ -50,3 +50,12 @@ class DeleteCategoryEvent extends ExpenseEvent {
 class SyncDataEvent extends ExpenseEvent {}
 
 class FetchInitialDataEvent extends ExpenseEvent {}
+
+class SetBudgetLimitEvent extends ExpenseEvent {
+  final double limit;
+
+  const SetBudgetLimitEvent(this.limit);
+
+  @override
+  List<Object> get props => [limit];
+}

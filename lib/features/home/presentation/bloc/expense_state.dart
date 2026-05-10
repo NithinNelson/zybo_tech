@@ -20,6 +20,7 @@ class ExpenseLoaded extends ExpenseState {
   final double totalIncome;
   final bool isSyncing;
   final String nickname;
+  final double budgetLimit;
 
   const ExpenseLoaded({
     required this.transactions,
@@ -28,6 +29,7 @@ class ExpenseLoaded extends ExpenseState {
     required this.totalIncome,
     required this.nickname,
     this.isSyncing = false,
+    this.budgetLimit = 1000.0,
   });
 
   ExpenseLoaded copyWith({
@@ -37,6 +39,7 @@ class ExpenseLoaded extends ExpenseState {
     double? totalIncome,
     bool? isSyncing,
     String? nickname,
+    double? budgetLimit,
   }) {
     return ExpenseLoaded(
       transactions: transactions ?? this.transactions,
@@ -45,6 +48,7 @@ class ExpenseLoaded extends ExpenseState {
       totalIncome: totalIncome ?? this.totalIncome,
       isSyncing: isSyncing ?? this.isSyncing,
       nickname: nickname ?? this.nickname,
+      budgetLimit: budgetLimit ?? this.budgetLimit,
     );
   }
 
@@ -56,6 +60,7 @@ class ExpenseLoaded extends ExpenseState {
         totalIncome,
         isSyncing,
         nickname,
+        budgetLimit,
       ];
 }
 

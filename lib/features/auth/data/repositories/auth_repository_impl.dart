@@ -54,4 +54,14 @@ class AuthRepositoryImpl implements AuthRepository {
     await sharedPreferences.clear();
     await DatabaseHelper.instance.clearAllData();
   }
+
+  @override
+  Future<void> saveBudgetLimit(double limit) async {
+    await sharedPreferences.setDouble('budget_limit', limit);
+  }
+
+  @override
+  Future<double> getBudgetLimit() async {
+    return sharedPreferences.getDouble('budget_limit') ?? 1000.0;
+  }
 }
