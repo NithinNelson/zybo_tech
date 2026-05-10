@@ -42,4 +42,9 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<String?> getToken() async {
     return sharedPreferences.getString('auth_token');
   }
+
+  @override
+  Future<String?> getNickname() async {
+    return sharedPreferences.getString('nickname');
+  }
 }

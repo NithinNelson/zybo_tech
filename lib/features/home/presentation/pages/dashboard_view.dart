@@ -42,7 +42,7 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '👋 Welcome!',
+                        '👋 Welcome! ${state.nickname}',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontSize: 19.h,
                         ),

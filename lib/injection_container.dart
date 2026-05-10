@@ -24,7 +24,7 @@ Future<void> init() async {
   // Blocs
   sl.registerFactory(() => OnboardingBloc(repository: sl()));
   sl.registerFactory(() => AuthBloc(repository: sl()));
-  sl.registerFactory(() => ExpenseBloc(repository: sl()));
+  sl.registerFactory(() => ExpenseBloc(repository: sl(), authRepository: sl()));
 
   // Repositories
   sl.registerLazySingleton<OnboardingRepository>(

@@ -19,12 +19,14 @@ class ExpenseLoaded extends ExpenseState {
   final double totalExpense;
   final double totalIncome;
   final bool isSyncing;
+  final String nickname;
 
   const ExpenseLoaded({
     required this.transactions,
     required this.categories,
     required this.totalExpense,
     required this.totalIncome,
+    required this.nickname,
     this.isSyncing = false,
   });
 
@@ -34,6 +36,7 @@ class ExpenseLoaded extends ExpenseState {
     double? totalExpense,
     double? totalIncome,
     bool? isSyncing,
+    String? nickname,
   }) {
     return ExpenseLoaded(
       transactions: transactions ?? this.transactions,
@@ -41,6 +44,7 @@ class ExpenseLoaded extends ExpenseState {
       totalExpense: totalExpense ?? this.totalExpense,
       totalIncome: totalIncome ?? this.totalIncome,
       isSyncing: isSyncing ?? this.isSyncing,
+      nickname: nickname ?? this.nickname,
     );
   }
 
@@ -51,6 +55,7 @@ class ExpenseLoaded extends ExpenseState {
         totalExpense,
         totalIncome,
         isSyncing,
+        nickname,
       ];
 }
 

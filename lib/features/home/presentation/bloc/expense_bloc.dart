@@ -1,12 +1,17 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/repositories/expense_repository.dart';
+import '../../../../features/auth/domain/repositories/auth_repository.dart';
 import 'expense_event.dart';
 import 'expense_state.dart';
 
 class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
   final ExpenseRepository repository;
+  final AuthRepository authRepository;
 
-  ExpenseBloc({required this.repository}) : super(ExpenseInitial()) {
+  ExpenseBloc({
+    required this.repository,
+    required this.authRepository,
+  }) : super(ExpenseInitial()) {
     on<LoadDashboardEvent>(_onLoadDashboard);
     on<AddTransactionEvent>(_onAddTransaction);
     on<DeleteTransactionEvent>(_onDeleteTransaction);
@@ -23,6 +28,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
   Future<void> _loadData(Emitter<ExpenseState> emit, {bool isSyncing = false}) async {
     final transactionsResult = await repository.getTransactions();
     final categoriesResult = await repository.getCategories();
+    final nickname = await authRepository.getNickname() ?? 'User';
 
     transactionsResult.fold(
       (error) => emit(ExpenseError(error)),
@@ -47,6 +53,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
               totalExpense: totalExpense,
               totalIncome: totalIncome,
               isSyncing: isSyncing,
+              nickname: nickname,
             ));
           },
         );
