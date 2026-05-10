@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -20,8 +21,36 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   final TextEditingController _otpController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
+  static const int _totalSeconds = 60;
+  final ValueNotifier<int> _remainingSeconds = ValueNotifier<int>(_totalSeconds);
+  final ValueNotifier<bool> _isOtpValid = ValueNotifier<bool>(true);
+  Timer? _countdownTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startCountdown();
+  }
+
+  void _startCountdown() {
+    _remainingSeconds.value = _totalSeconds;
+    _countdownTimer?.cancel();
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_remainingSeconds.value <= 1) {
+        timer.cancel();
+        _remainingSeconds.value = 0;
+        _isOtpValid.value = false;
+      } else {
+        _remainingSeconds.value--;
+      }
+    });
+  }
+
   @override
   void dispose() {
+    _countdownTimer?.cancel();
+    _remainingSeconds.dispose();
+    _isOtpValid.dispose();
     _otpController.dispose();
     _focusNode.dispose();
     super.dispose();
@@ -29,6 +58,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   void _verifyOtp(AuthOtpSent state) {
     if (_otpController.text.length == 6) {
+      _countdownTimer?.cancel();
       context.read<AuthBloc>().add(
             VerifyOtpEvent(
               otp: _otpController.text,
@@ -40,6 +70,13 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
             ),
           );
     }
+  }
+
+  void _resendOtp(String phone) {
+    _otpController.clear();
+    _isOtpValid.value = true;
+    context.read<AuthBloc>().add(SendOtpEvent(phone));
+    _startCountdown();
   }
 
   @override
@@ -55,10 +92,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 SnackBar(content: Text(state.message), backgroundColor: AppColors.dangerRed),
               );
             } else if (state is AuthSuccess && state.isNewUser) {
+              _countdownTimer?.cancel();
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const UserNameScreen()),
               );
             } else if (state is AuthAuthenticated) {
+              _countdownTimer?.cancel();
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => const HomeScreen()),
                 (route) => false,
@@ -109,16 +148,23 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                       'Enter the 6-Digit code sent to $phone',
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                    if (displayedOtp.isNotEmpty) ...[
-                      SizedBox(height: 8.h),
-                      Text(
-                        'Test OTP: $displayedOtp',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.emeraldGreen,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    if (displayedOtp.isNotEmpty)
+                      ValueListenableBuilder<bool>(
+                        valueListenable: _isOtpValid,
+                        builder: (context, isValid, child) {
+                          if (!isValid) return const SizedBox.shrink();
+                          return Padding(
+                            padding: EdgeInsets.only(top: 8.h),
+                            child: Text(
+                              'Test OTP: $displayedOtp',
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: AppColors.emeraldGreen,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    ],
                     SizedBox(height: 8.h),
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
@@ -189,52 +235,76 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                       ],
                     ),
                     SizedBox(height: 23.h),
-                    ValueListenableBuilder<TextEditingValue>(
-                      valueListenable: _otpController,
-                      builder: (context, value, child) {
-                        final bool isFilled = value.text.length == 6;
-                        return ElevatedButton(
-                          onPressed: isFilled && !isLoading
-                              ? () {
-                                  if (state is AuthOtpSent) {
-                                    _verifyOtp(state);
-                                  }
-                                }
-                              : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: AppColors.textPrimary,
-                            disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.5),
-                            minimumSize: Size(double.infinity, 48.h),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: isLoading
-                              ? SizedBox(
-                                  height: 20.h,
-                                  width: 20.h,
-                                  child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                                )
-                              : Text(
-                                  'Verify',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 15.h,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                    ValueListenableBuilder<bool>(
+                      valueListenable: _isOtpValid,
+                      builder: (context, isValid, _) {
+                        return ValueListenableBuilder<TextEditingValue>(
+                          valueListenable: _otpController,
+                          builder: (context, value, child) {
+                            final bool isFilled = value.text.length == 6;
+                            return ElevatedButton(
+                              onPressed: isFilled && !isLoading && isValid
+                                  ? () {
+                                      if (state is AuthOtpSent) {
+                                        _verifyOtp(state);
+                                      }
+                                    }
+                                  : null,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                foregroundColor: AppColors.textPrimary,
+                                disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.5),
+                                minimumSize: Size(double.infinity, 48.h),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.r),
                                 ),
+                                elevation: 0,
+                              ),
+                              child: isLoading
+                                  ? SizedBox(
+                                      height: 20.h,
+                                      width: 20.h,
+                                      child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                    )
+                                  : Text(
+                                      'Verify',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 15.h,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                            );
+                          },
                         );
                       },
                     ),
                     SizedBox(height: 32.h),
-                    Text(
-                        'Resend OTP in 32s',
-                      style: GoogleFonts.inter(
-                          fontSize: 13.h,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.textPrimary.withValues(alpha: 0.6)
-                      ),
+                    ValueListenableBuilder<int>(
+                      valueListenable: _remainingSeconds,
+                      builder: (context, seconds, child) {
+                        if (seconds > 0) {
+                          return Text(
+                            'Resend OTP in ${seconds}s',
+                            style: GoogleFonts.inter(
+                              fontSize: 13.h,
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.textPrimary.withValues(alpha: 0.6),
+                            ),
+                          );
+                        } else {
+                          return GestureDetector(
+                            onTap: phone.isNotEmpty ? () => _resendOtp(phone) : null,
+                            child: Text(
+                              'Resend OTP',
+                              style: GoogleFonts.inter(
+                                fontSize: 13.h,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          );
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -246,4 +316,3 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     );
   }
 }
-
