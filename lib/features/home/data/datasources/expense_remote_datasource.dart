@@ -4,15 +4,13 @@ import '../models/category_model.dart';
 import '../models/transaction_model.dart';
 
 abstract class ExpenseRemoteDataSource {
-  // Categories
   Future<List<CategoryModel>> getCategories();
-  Future<List<String>> addCategory(CategoryModel category); // Return synced IDs
-  Future<List<String>> deleteCategories(List<String> ids); // Return deleted IDs
+  Future<List<String>> addCategory(CategoryModel category);
+  Future<List<String>> deleteCategories(List<String> ids);
 
-  // Transactions
   Future<List<TransactionModel>> getTransactions();
-  Future<List<String>> addTransactions(List<TransactionModel> transactions); // Return synced IDs
-  Future<List<String>> deleteTransactions(List<String> ids); // Return deleted IDs
+  Future<List<String>> addTransactions(List<TransactionModel> transactions);
+  Future<List<String>> deleteTransactions(List<String> ids);
 }
 
 class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {

@@ -62,12 +62,10 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
     try {
       await localDataSource.addTransaction(transaction);
       
-      // Budget Limit Check Logic
       if (transaction.type == 'debit') {
         final totalDebit = await getCurrentMonthDebits();
         const double limit = 1000.0;
         
-        // Only trigger notification the exact moment it crosses the threshold
         if (totalDebit > limit && (totalDebit - transaction.amount) <= limit) {
           await notificationService.showBudgetAlertNotification(totalDebit, limit);
         }
@@ -112,9 +110,6 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   @override
   Future<Either<String, void>> syncData() async {
     try {
-      // --- STEP A: Cloud Purge ---
-      
-      // 1. Delete Transactions
       final deletedTxs = await localDataSource.getDeletedTransactions();
       if (deletedTxs.isNotEmpty) {
         final deletedIds = await remoteDataSource.deleteTransactions(deletedTxs.map((e) => e.id).toList());
@@ -123,7 +118,6 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
         }
       }
 
-      // 2. Delete Categories
       final deletedCats = await localDataSource.getDeletedCategories();
       if (deletedCats.isNotEmpty) {
         final deletedIds = await remoteDataSource.deleteCategories(deletedCats.map((e) => e.id).toList());
@@ -132,23 +126,16 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
         }
       }
 
-      // --- STEP B: Cloud Backup ---
-      
-      // 1. Sync Categories First
       final unsyncedCats = await localDataSource.getUnsyncedCategories();
       if (unsyncedCats.isNotEmpty) {
         for (final category in unsyncedCats) {
-          // The API add category expects a single object per request
           try {
             final syncedIds = await remoteDataSource.addCategory(category);
             await localDataSource.markCategorySynced(syncedIds);
-          } catch (_) {
-            // Continue with others if one fails
-          }
+          } catch (_) {}
         }
       }
 
-      // 2. Sync Transactions Second (Batch)
       final unsyncedTxs = await localDataSource.getUnsyncedTransactions();
       if (unsyncedTxs.isNotEmpty) {
         final syncedIds = await remoteDataSource.addTransactions(unsyncedTxs);

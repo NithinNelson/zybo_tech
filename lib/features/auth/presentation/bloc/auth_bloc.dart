@@ -58,7 +58,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     
     result.fold(
       (error) => emit(AuthError(error)),
-      (token) => token, // just extract
+      (token) => token,
     );
 
     if (result.isRight()) {

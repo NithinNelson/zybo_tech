@@ -4,21 +4,18 @@ import '../models/category_model.dart';
 import '../models/transaction_model.dart';
 
 abstract class ExpenseLocalDataSource {
-  // Categories
   Future<List<CategoryModel>> getCategories({bool includeDeleted = false});
   Future<void> addCategory(CategoryModel category);
   Future<void> deleteCategory(String id);
   Future<void> hardDeleteCategory(String id);
   Future<void> markCategorySynced(List<String> ids);
 
-  // Transactions
   Future<List<TransactionModel>> getTransactions({bool includeDeleted = false});
   Future<void> addTransaction(TransactionModel transaction);
   Future<void> deleteTransaction(String id);
   Future<void> hardDeleteTransaction(String id);
   Future<void> markTransactionSynced(List<String> ids);
   
-  // Sync Queries
   Future<List<CategoryModel>> getUnsyncedCategories();
   Future<List<CategoryModel>> getDeletedCategories();
   Future<List<TransactionModel>> getUnsyncedTransactions();
@@ -89,7 +86,6 @@ class ExpenseLocalDataSourceImpl implements ExpenseLocalDataSource {
     final db = await databaseHelper.database;
     final where = includeDeleted ? '' : 'WHERE t.is_deleted = 0';
     
-    // SQL Challenge: Use SQL JOIN to fetch Category Name
     final query = '''
       SELECT 
         t.*, 

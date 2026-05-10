@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/repositories/expense_repository.dart';
 import '../../../../features/auth/domain/repositories/auth_repository.dart';
@@ -28,7 +29,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
   Future<void> _loadData(Emitter<ExpenseState> emit, {bool isSyncing = false}) async {
     final transactionsResult = await repository.getTransactions();
     final categoriesResult = await repository.getCategories();
-    final nickname = await authRepository.getNickname() ?? 'User';
+    final nickname = await authRepository.getNickname() ?? '';
 
     transactionsResult.fold(
       (error) => emit(ExpenseError(error)),
@@ -71,11 +72,9 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
 
   Future<void> _onDeleteTransaction(DeleteTransactionEvent event, Emitter<ExpenseState> emit) async {
     if (state is ExpenseLoaded) {
-      // Optimistic update: immediately filter out of BLoC state
       final currentState = state as ExpenseLoaded;
       final updatedList = currentState.transactions.where((t) => t.id != event.id).toList();
       
-      // Recalculate totals for optimistic state
       double newTotalExpense = 0;
       double newTotalIncome = 0;
       for (var tx in updatedList) {
@@ -132,9 +131,9 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     result.fold(
       (error) {
         emit(ExpenseError(error));
-        _loadData(emit); // Reload to reset syncing state
+        _loadData(emit);
       },
-      (_) => _loadData(emit), // Reload fresh data after sync
+      (_) => _loadData(emit),
     );
   }
 }

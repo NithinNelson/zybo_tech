@@ -126,7 +126,7 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
                       (context, index) {
                         return _buildTransactionItem(context, state.transactions[index]);
                       },
-                      childCount: state.transactions.length > 10 ? 10 : state.transactions.length, // List 10 recent
+                      childCount: state.transactions.length > 10 ? 10 : state.transactions.length,
                     ),
                   ),
                 SliverToBoxAdapter(child: SizedBox(height: 180.h)),
@@ -169,11 +169,11 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
           Row(
             children: [
               Text(
-                '₹${totalExpense.toStringAsFixed(2)}',
+                '₹${totalExpense.toStringAsFixed(0)}',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               Text(
-                ' / ₹${limit.toStringAsFixed(2)}',
+                ' / ₹${limit.toStringAsFixed(0)}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: AppColors.textPrimary.withValues(alpha: 0.6),
                 ),

@@ -4,9 +4,9 @@ class TransactionModel extends Equatable {
   final String id;
   final double amount;
   final String note;
-  final String type; // 'credit' or 'debit'
+  final String type;
   final String categoryId;
-  final String? categoryName; // Fetched via JOIN, not saved directly to transaction table
+  final String? categoryName;
   final DateTime timestamp;
   final bool isSynced;
   final bool isDeleted;
@@ -29,8 +29,8 @@ class TransactionModel extends Equatable {
       amount: (json['amount'] as num).toDouble(),
       note: json['note'],
       type: json['type'],
-      categoryId: json['category_id'] ?? json['category'] ?? '', // Handle both local and API formats if needed
-      categoryName: json['category_name'], // From JOIN
+      categoryId: json['category_id'] ?? json['category'] ?? '',
+      categoryName: json['category_name'],
       timestamp: DateTime.parse(json['timestamp']),
       isSynced: json['is_synced'] == 1 || json['is_synced'] == true,
       isDeleted: json['is_deleted'] == 1 || json['is_deleted'] == true,
@@ -57,8 +57,7 @@ class TransactionModel extends Equatable {
       'note': note,
       'type': type,
       'category_id': categoryId,
-      // The API doc says: "timestamp": "2023-10-27 10:00:00"
-      'timestamp': timestamp.toIso8601String().replaceAll('T', ' ').substring(0, 19), 
+      'timestamp': timestamp.toIso8601String().replaceAll('T', ' ').substring(0, 19),
     };
   }
 
