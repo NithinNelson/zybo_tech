@@ -144,15 +144,21 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
         await localDataSource.markTransactionSynced(syncedIds);
       }
 
-      // Fetch from remote and ensure local data matches remote completely
       final remoteCategories = await remoteDataSource.getCategories();
       for (final cat in remoteCategories) {
         await localDataSource.addCategory(cat.copyWith(isSynced: true));
       }
 
+      final allLocalCats = await localDataSource.getCategories(includeDeleted: false);
+      final catNameToId = <String, String>{};
+      for (final c in allLocalCats) {
+        catNameToId[c.name] = c.id;
+      }
+
       final remoteTransactions = await remoteDataSource.getTransactions();
       for (final tx in remoteTransactions) {
-        await localDataSource.addTransaction(tx.copyWith(isSynced: true));
+        final resolvedCatId = (tx.categoryId.isNotEmpty) ? tx.categoryId : (catNameToId[tx.categoryName] ?? '');
+        await localDataSource.addTransaction(tx.copyWith(isSynced: true, categoryId: resolvedCatId));
       }
 
       return const Right(null);
@@ -175,13 +181,21 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
         }
       }
 
+      // Build a name→id map so we can resolve API category names to local UUIDs
+      final allLocalCats = await localDataSource.getCategories(includeDeleted: false);
+      final catNameToId = <String, String>{};
+      for (final c in allLocalCats) {
+        catNameToId[c.name] = c.id;
+      }
+
       final remoteTransactions = await remoteDataSource.getTransactions();
       final localTransactions = await localDataSource.getTransactions(includeDeleted: true);
       final localTransactionIds = localTransactions.map((t) => t.id).toSet();
 
       for (final tx in remoteTransactions) {
         if (!localTransactionIds.contains(tx.id)) {
-          await localDataSource.addTransaction(tx.copyWith(isSynced: true));
+          final resolvedCatId = (tx.categoryId.isNotEmpty) ? tx.categoryId : (catNameToId[tx.categoryName] ?? '');
+          await localDataSource.addTransaction(tx.copyWith(isSynced: true, categoryId: resolvedCatId));
         }
       }
 

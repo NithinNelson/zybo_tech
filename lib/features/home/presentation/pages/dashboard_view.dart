@@ -301,6 +301,7 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
+                SizedBox(height: 4.h),
                 Text(
                   transaction.categoryName ?? '--',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
