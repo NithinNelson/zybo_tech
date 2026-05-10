@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import '../../../../core/network/api_client.dart';
 import '../models/category_model.dart';
 import '../models/transaction_model.dart';
@@ -39,6 +40,8 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
       final data = json.decode(response.body);
+      log('-------category--------${category.toApiJson()}');
+      log('-------addCategory--------$data');
       if (data['status'] == 'success') {
         return List<String>.from(data['synced_ids']);
       }
@@ -55,6 +58,8 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
     );
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
+      log('-------delete--------$ids');
+      log('-------deleteCategories--------$data');
       if (data['status'] == 'success') {
         return List<String>.from(data['deleted_ids']);
       }
@@ -88,6 +93,8 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
     
     if (response.statusCode == 200 || response.statusCode == 201) {
       final data = json.decode(response.body);
+      log('-------transactions--------${transactions.map((t) => t.toApiJson()).toList()}');
+      log('-------addTransactions--------$data');
       if (data['status'] == 'success') {
         return List<String>.from(data['synced_ids']);
       }

@@ -20,6 +20,8 @@ abstract class ExpenseLocalDataSource {
   Future<List<CategoryModel>> getDeletedCategories();
   Future<List<TransactionModel>> getUnsyncedTransactions();
   Future<List<TransactionModel>> getDeletedTransactions();
+  Future<void> saveCategories(List<CategoryModel> categories);
+  Future<void> saveTransactions(List<TransactionModel> transactions);
 }
 
 class ExpenseLocalDataSourceImpl implements ExpenseLocalDataSource {
@@ -169,5 +171,25 @@ class ExpenseLocalDataSourceImpl implements ExpenseLocalDataSource {
     final db = await databaseHelper.database;
     final maps = await db.query('transactions', where: 'is_deleted = 1');
     return List.generate(maps.length, (i) => TransactionModel.fromJson(maps[i]));
+  }
+
+  @override
+  Future<void> saveCategories(List<CategoryModel> categories) async {
+    final db = await databaseHelper.database;
+    final batch = db.batch();
+    for (var cat in categories) {
+      batch.insert('categories', cat.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+    await batch.commit(noResult: true);
+  }
+
+  @override
+  Future<void> saveTransactions(List<TransactionModel> transactions) async {
+    final db = await databaseHelper.database;
+    final batch = db.batch();
+    for (var tx in transactions) {
+      batch.insert('transactions', tx.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+    await batch.commit(noResult: true);
   }
 }

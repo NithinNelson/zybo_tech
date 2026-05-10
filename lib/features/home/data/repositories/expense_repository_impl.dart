@@ -20,10 +20,15 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   @override
   Future<Either<String, List<CategoryModel>>> getCategories() async {
     try {
+      try {
+        final remoteCategories = await remoteDataSource.getCategories();
+        await localDataSource.saveCategories(remoteCategories);
+      } catch (e) {}
+      
       final categories = await localDataSource.getCategories(includeDeleted: false);
       return Right(categories);
     } catch (e) {
-      return Left('Local Database Error: ${e.toString()}');
+      return Left('Database Error: ${e.toString()}');
     }
   }
 
@@ -50,10 +55,15 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   @override
   Future<Either<String, List<TransactionModel>>> getTransactions() async {
     try {
+      try {
+        final remoteTransactions = await remoteDataSource.getTransactions();
+        await localDataSource.saveTransactions(remoteTransactions);
+      } catch (e) {}
+
       final transactions = await localDataSource.getTransactions(includeDeleted: false);
       return Right(transactions);
     } catch (e) {
-      return Left('Local Database Error: ${e.toString()}');
+      return Left('Database Error: ${e.toString()}');
     }
   }
 

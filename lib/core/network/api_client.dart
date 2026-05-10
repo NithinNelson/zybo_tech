@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,6 +12,7 @@ class ApiClient {
 
   Future<Map<String, String>> _getHeaders() async {
     final token = sharedPreferences.getString('auth_token');
+    log('-----token-------$token');
     return {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
