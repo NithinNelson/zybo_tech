@@ -131,16 +131,17 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
   Future<void> _onSyncData(SyncDataEvent event, Emitter<ExpenseState> emit) async {
     if (state is ExpenseLoaded) {
       final currentState = state as ExpenseLoaded;
-      emit(currentState.copyWith(isSyncing: true));
+      if (!emit.isDone) emit(currentState.copyWith(isSyncing: true));
     }
-    
+
     final result = await repository.syncData();
-    result.fold(
-      (error) {
-        emit(ExpenseError(error));
-        _loadData(emit);
-      },
-      (_) => _loadData(emit),
-    );
+
+    if (result.isLeft()) {
+      String? error;
+      result.fold((l) => error = l, (r) {});
+      if (error != null && !emit.isDone) emit(ExpenseError(error!));
+    }
+
+    await _loadData(emit);
   }
 }
