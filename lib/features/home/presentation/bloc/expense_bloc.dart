@@ -75,7 +75,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     if (state is ExpenseLoaded) {
       final currentState = state as ExpenseLoaded;
       final updatedList = currentState.transactions.where((t) => t.id != event.id).toList();
-      
+
       double newTotalExpense = 0;
       double newTotalIncome = 0;
       for (var tx in updatedList) {
@@ -85,19 +85,23 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
           newTotalIncome += tx.amount;
         }
       }
-      
-      emit(currentState.copyWith(
-        transactions: updatedList,
-        totalExpense: newTotalExpense,
-        totalIncome: newTotalIncome,
-      ));
+
+      if (!emit.isDone) {
+        emit(currentState.copyWith(
+          transactions: updatedList,
+          totalExpense: newTotalExpense,
+          totalIncome: newTotalIncome,
+        ));
+      }
     }
-    
+
     final result = await repository.deleteTransaction(event.id);
-    result.fold(
-      (error) => emit(ExpenseError(error)),
-      (_) => _loadData(emit),
-    );
+
+    if (result.isLeft()) {
+      result.fold((error) => emit(ExpenseError(error)), (_) {});
+    } else {
+      await _loadData(emit);
+    }
   }
 
   Future<void> _onAddCategory(AddCategoryEvent event, Emitter<ExpenseState> emit) async {
