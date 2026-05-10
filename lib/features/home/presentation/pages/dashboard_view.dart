@@ -285,9 +285,6 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
                   'assets/images/shopping_bag.svg',
                   height: 15.h,
                   fit: BoxFit.fitHeight,
-                  colorFilter: transaction.isSynced 
-                      ? const ColorFilter.mode(AppColors.emeraldGreen, BlendMode.srcIn)
-                      : null,
                 ),
               ),
             ),

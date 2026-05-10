@@ -14,3 +14,4 @@ class PageChanged extends OnboardingEvent {
   @override
   List<Object?> get props => [index];
 }
+class ResetOnboarding extends OnboardingEvent {}

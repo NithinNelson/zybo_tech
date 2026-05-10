@@ -114,9 +114,6 @@ class _TransactionsScreenState extends State<TransactionsScreen> with AutomaticK
                   isCredit ? 'assets/images/liquid_drop.svg' : 'assets/images/shopping_bag.svg',
                   height: 15.h,
                   fit: BoxFit.fitHeight,
-                  colorFilter: transaction.isSynced 
-                      ? const ColorFilter.mode(AppColors.emeraldGreen, BlendMode.srcIn)
-                      : null,
                 ),
               ),
             ),

@@ -29,5 +29,9 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         emit(state.copyWith(currentIndex: state.currentIndex - 1));
       }
     });
+
+    on<ResetOnboarding>((event, emit) {
+      emit(const OnboardingState());
+    });
   }
 }

@@ -14,6 +14,8 @@ import '../../../../injection_container.dart' as di;
 import '../../../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../../../features/auth/presentation/bloc/auth_event.dart';
 import '../../../../features/onboarding/presentation/pages/onboarding_screen.dart';
+import '../../../../features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import '../../../../features/onboarding/presentation/bloc/onboarding_event.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -406,6 +408,7 @@ class _ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCl
                           onPressed: () {
                             Navigator.pop(ctx);
                             context.read<AuthBloc>().add(LogoutEvent());
+                            context.read<OnboardingBloc>().add(ResetOnboarding());
                             Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(builder: (_) => const OnboardingScreen()),
                               (route) => false,
