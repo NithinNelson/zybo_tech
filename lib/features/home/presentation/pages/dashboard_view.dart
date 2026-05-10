@@ -63,7 +63,7 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
                       _buildStatCard(
                         context: context,
                         title: 'Total Income',
-                        amount: '₹${state.totalIncome.toStringAsFixed(2)}',
+                        amount: '₹${state.totalIncome.toStringAsFixed(0)}',
                         isIncome: true,
                         gradient: const LinearGradient(
                           colors: [AppColors.forestGreen, AppColors.darkForestGreen],
@@ -75,7 +75,7 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
                       _buildStatCard(
                         context: context,
                         title: 'Total Expense',
-                        amount: '₹${state.totalExpense.toStringAsFixed(2)}',
+                        amount: '₹${state.totalExpense.toStringAsFixed(0)}',
                         isIncome: false,
                         gradient: const LinearGradient(
                           colors: [AppColors.crimson, AppColors.blackMaroon],
@@ -305,7 +305,7 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
-                  transaction.categoryName ?? 'Unknown Category', // Display category name from JOIN
+                  transaction.categoryName ?? '--',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     fontSize: 13.h,
                     color: AppColors.textPrimary.withValues(alpha: 0.6),
@@ -325,7 +325,7 @@ class _DashboardViewState extends State<DashboardView> with AutomaticKeepAliveCl
                 ),
               ),
               Text(
-                '$sign₹${transaction.amount.toStringAsFixed(2)}',
+                '$sign₹${transaction.amount.toStringAsFixed(0)}',
                 style: GoogleFonts.inter(
                   fontSize: 21.h,
                   fontWeight: FontWeight.w500,
