@@ -64,4 +64,23 @@ class ApiClient {
     final streamedResponse = await client.send(request);
     return await http.Response.fromStream(streamedResponse);
   }
+
+  Future<http.Response> deleteFormData(String endpoint, {Map<String, String>? fields}) async {
+    final token = sharedPreferences.getString('auth_token');
+    final url = Uri.parse('$baseUrl$endpoint');
+    log('-----method-------delete (form-data)');
+    log('-----url-------$url');
+    log('-----fields-------$fields');
+
+    final request = http.MultipartRequest('DELETE', url);
+    if (token != null) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+    if (fields != null) {
+      request.fields.addAll(fields);
+    }
+
+    final streamedResponse = await client.send(request);
+    return await http.Response.fromStream(streamedResponse);
+  }
 }

@@ -112,9 +112,14 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   @override
   Future<Either<String, void>> syncData() async {
     try {
+      // Track IDs we just deleted so we don't re-add them from the server
+      final Set<String> deletedCatIds = {};
+      final Set<String> deletedTxIds = {};
+
       final deletedTxs = await localDataSource.getDeletedTransactions();
       if (deletedTxs.isNotEmpty) {
         final deletedIds = await remoteDataSource.deleteTransactions(deletedTxs.map((e) => e.id).toList());
+        deletedTxIds.addAll(deletedIds);
         for (final id in deletedIds) {
           await localDataSource.hardDeleteTransaction(id);
         }
@@ -123,6 +128,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
       final deletedCats = await localDataSource.getDeletedCategories();
       if (deletedCats.isNotEmpty) {
         final deletedIds = await remoteDataSource.deleteCategories(deletedCats.map((e) => e.id).toList());
+        deletedCatIds.addAll(deletedIds);
         for (final id in deletedIds) {
           await localDataSource.hardDeleteCategory(id);
         }
@@ -146,7 +152,9 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
 
       final remoteCategories = await remoteDataSource.getCategories();
       for (final cat in remoteCategories) {
-        await localDataSource.addCategory(cat.copyWith(isSynced: true));
+        if (!deletedCatIds.contains(cat.id)) {
+          await localDataSource.addCategory(cat.copyWith(isSynced: true));
+        }
       }
 
       final allLocalCats = await localDataSource.getCategories(includeDeleted: false);
@@ -157,8 +165,10 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
 
       final remoteTransactions = await remoteDataSource.getTransactions();
       for (final tx in remoteTransactions) {
-        final resolvedCatId = (tx.categoryId.isNotEmpty) ? tx.categoryId : (catNameToId[tx.categoryName] ?? '');
-        await localDataSource.addTransaction(tx.copyWith(isSynced: true, categoryId: resolvedCatId));
+        if (!deletedTxIds.contains(tx.id)) {
+          final resolvedCatId = (tx.categoryId.isNotEmpty) ? tx.categoryId : (catNameToId[tx.categoryName] ?? '');
+          await localDataSource.addTransaction(tx.copyWith(isSynced: true, categoryId: resolvedCatId));
+        }
       }
 
       return const Right(null);

@@ -52,19 +52,28 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
   @override
   Future<List<String>> deleteCategories(List<String> ids) async {
     if (ids.isEmpty) return [];
-    final response = await apiClient.delete(
-      '/categories/delete/',
-      body: {'ids': ids},
-    );
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      log('-------delete--------$ids');
-      log('-------deleteCategories--------$data');
-      if (data['status'] == 'success') {
-        return List<String>.from(data['deleted_ids']);
+    final List<String> successfullyDeleted = [];
+    
+    for (final id in ids) {
+      try {
+        final response = await apiClient.deleteFormData(
+          '/categories/delete/',
+          fields: {'category_id': id},
+        );
+        log('-------delete category--------$id');
+        log('-------deleteCategory response--------${response.body}');
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          if (data['status'] == 'success') {
+            successfullyDeleted.add(id);
+          }
+        }
+      } catch (e) {
+        log('-------deleteCategory error--------$e');
       }
     }
-    throw Exception('Failed to delete categories');
+    
+    return successfullyDeleted;
   }
 
   @override
